@@ -1,1 +1,145 @@
-<!doctype html><meta charset="utf-8"><title>RAIL CITY</title><h1>RAIL CITY</h1><p>Publishing...</p>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08131f">
+<title>RAIL CITY Visual Playable Alpha</title>
+<style>
+:root{color-scheme:dark;--bg:#07101a;--panel:#101d2a;--panel2:#162536;--line:#2d4258;--txt:#eef7ff;--muted:#9eb5c9;--blue:#62bdff;--green:#6dd79b;--gold:#efc66c;--red:#ff8585}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#10253b,#07101a 46%);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}button{font:inherit;color:inherit}
+#titleScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(rgba(4,10,16,.15),rgba(4,10,16,.86)),url('assets/concept-1.jpg') center/cover no-repeat}
+.titleCard{width:min(920px,100%);padding:clamp(22px,4vw,44px);background:rgba(6,15,24,.72);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.18);border-radius:28px}
+.logo{font-size:clamp(38px,8vw,78px);font-weight:900;letter-spacing:.04em;line-height:.9}.tag{margin-top:12px;font-size:clamp(17px,3vw,28px);font-weight:700}.sub{color:#c3d4e2;max-width:660px;line-height:1.7}
+.startBtn{margin-top:22px;min-height:54px;border:none;border-radius:15px;padding:0 26px;background:linear-gradient(135deg,#5dbaff,#3c8ee8);font-weight:900;font-size:17px;box-shadow:0 10px 32px rgba(69,160,239,.32)}
+.posterRow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:25px}.posterRow img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.16)}
+#gameScreen{display:none;max-width:1240px;margin:auto;padding:10px}.top{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-bottom:8px}.stat,.card{background:rgba(14,27,40,.94);border:1px solid var(--line);border-radius:13px}.stat{padding:9px}.stat small{display:block;color:var(--muted);font-size:11px}.stat b{font-size:15px;white-space:nowrap}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 315px;gap:8px}.gameBox{overflow:hidden;border-radius:16px;border:1px solid var(--line);background:#101b26}.visualHeader{position:relative;height:140px;overflow:hidden}.visualHeader img{width:100%;height:100%;object-fit:cover;filter:saturate(.9)}.visualHeader:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,12,20,.72),rgba(5,12,20,.03),rgba(5,12,20,.45))}.visualCaption{position:absolute;z-index:2;left:16px;bottom:13px;font-weight:900;font-size:19px;text-shadow:0 2px 8px #000}.mapWrap{position:relative}canvas{display:block;width:100%;height:auto;background:#182635;touch-action:manipulation}.notice{position:absolute;left:10px;top:10px;max-width:75%;padding:8px 10px;border-radius:9px;background:rgba(4,11,18,.9);border:1px solid #48637c;font-size:13px}
+.controls{display:flex;gap:6px;flex-wrap:wrap;padding:8px;border-top:1px solid var(--line)}.controls button,.btn{min-height:43px;padding:8px 11px;border:1px solid #3b536b;background:#17283a;border-radius:9px;font-weight:750}.controls button.active{background:#1b4667;border-color:#6dc1ff}.controls button:disabled{opacity:.4}.side{display:flex;flex-direction:column;gap:8px;min-width:0}.card{padding:10px}.card h3{margin:0 0 7px;font-size:14px}.muted{color:var(--muted);font-size:12px;line-height:1.55}
+.sceneCard{padding:0;overflow:hidden}.sceneCard img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}.sceneCard div{padding:9px}
+.mission{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:center;margin:7px 0}.mission img{width:68px;height:52px;object-fit:cover;border-radius:7px}.mission b{font-size:12px}.mission span{display:block;color:var(--muted);font-size:11px}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.gallery button{padding:0;border:0;background:none}.gallery img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+#lightbox{position:fixed;inset:0;display:none;z-index:20;background:rgba(2,7,12,.93);padding:18px;align-items:center;justify-content:center}#lightbox.open{display:flex}#lightbox img{max-width:96vw;max-height:88vh;border-radius:12px}#lightbox button{position:absolute;right:16px;top:16px;border:1px solid #71879a;background:#132335;border-radius:10px;padding:10px 14px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.sceneCard{grid-row:1/span 2}.top{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){#gameScreen{padding:5px}.top{grid-template-columns:repeat(2,1fr)}.side{grid-template-columns:1fr}.visualHeader{height:115px}.posterRow{grid-template-columns:repeat(2,1fr)}.controls button{flex:1 1 auto}.gallery{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<section id="titleScreen">
+  <div class="titleCard">
+    <div class="logo">RAIL CITY</div>
+    <div class="tag">鉄道で、街が動き出す。</div>
+    <p class="sub">線路を敷き、駅をつくり、列車を走らせる。利用者が増えるほど駅前が育ち、住宅・商業・オフィスが発展していく鉄道都市シミュレーション。</p>
+    <button id="startBtn" class="startBtn" type="button">都市をつくる</button>
+    <div class="posterRow">
+      <img src="assets/concept-2.jpg" alt="RAIL CITY コンセプトアート1">
+      <img src="assets/concept-3.jpg" alt="RAIL CITY コンセプトアート2">
+      <img src="assets/concept-4.jpg" alt="RAIL CITY コンセプトアート3">
+      <img src="assets/concept-5.jpg" alt="RAIL CITY コンセプトアート4">
+    </div>
+  </div>
+</section>
+
+<main id="gameScreen">
+  <div class="top">
+    <div class="stat"><small>資金</small><b id="cash">120.0億円</b></div>
+    <div class="stat"><small>人口</small><b id="pop">0人</b></div>
+    <div class="stat"><small>鉄道収入</small><b id="rev">0万円</b></div>
+    <div class="stat"><small>日時</small><b id="time">Day 1 06:00</b></div>
+    <div class="stat"><small>速度</small><b id="speed">×1</b></div>
+  </div>
+
+  <div class="layout">
+    <section class="gameBox">
+      <div class="visualHeader"><img id="modeVisual" src="assets/concept-2.jpg" alt="都市イメージ"><div id="visualCaption" class="visualCaption">あなたの鉄道都市</div></div>
+      <div class="mapWrap">
+        <canvas id="map" width="900" height="510" aria-label="鉄道都市ゲームマップ"></canvas>
+        <div id="notice" class="notice">駅を2つ建設してください。</div>
+      </div>
+      <div class="controls">
+        <button type="button" data-mode="inspect" class="active">見る</button>
+        <button type="button" data-mode="station">駅建設 8億</button>
+        <button type="button" data-mode="track">線路</button>
+        <button type="button" data-mode="route">路線設定</button>
+        <button type="button" id="routeOk" disabled>路線確定</button>
+        <button type="button" id="trainBtn" disabled>列車購入 6億</button>
+        <button type="button" data-speed="0">⏸</button>
+        <button type="button" data-speed="1">×1</button>
+        <button type="button" data-speed="2">×2</button>
+        <button type="button" data-speed="4">×4</button>
+        <button type="button" id="reset">最初から</button>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card sceneCard">
+        <img id="sceneImage" src="assets/concept-3.jpg" alt="発展する都市のコンセプトアート">
+        <div><h3 id="sceneTitle">都市の未来像</h3><div id="sceneText" class="muted">駅を増やし、路線を伸ばすほど街並みが大きく変化します。</div></div>
+      </section>
+
+      <section class="card">
+        <h3>選択情報</h3>
+        <div id="info" class="muted">駅・列車・街区をタップしてください。</div>
+      </section>
+
+      <section class="card">
+        <h3>ミッション</h3>
+        <div id="missions"></div>
+      </section>
+
+      <section class="card">
+        <h3>コンセプトギャラリー</h3>
+        <div class="gallery" id="gallery"><button type="button" data-src="assets/concept-1.jpg" aria-label="コンセプトアート1を拡大"><img src="assets/concept-1.jpg" alt="RAIL CITY コンセプトアート1"></button><button type="button" data-src="assets/concept-2.jpg" aria-label="コンセプトアート2を拡大"><img src="assets/concept-2.jpg" alt="RAIL CITY コンセプトアート2"></button><button type="button" data-src="assets/concept-3.jpg" aria-label="コンセプトアート3を拡大"><img src="assets/concept-3.jpg" alt="RAIL CITY コンセプトアート3"></button><button type="button" data-src="assets/concept-4.jpg" aria-label="コンセプトアート4を拡大"><img src="assets/concept-4.jpg" alt="RAIL CITY コンセプトアート4"></button><button type="button" data-src="assets/concept-5.jpg" aria-label="コンセプトアート5を拡大"><img src="assets/concept-5.jpg" alt="RAIL CITY コンセプトアート5"></button><button type="button" data-src="assets/concept-6.jpg" aria-label="コンセプトアート6を拡大"><img src="assets/concept-6.jpg" alt="RAIL CITY コンセプトアート6"></button><button type="button" data-src="assets/concept-7.jpg" aria-label="コンセプトアート7を拡大"><img src="assets/concept-7.jpg" alt="RAIL CITY コンセプトアート7"></button><button type="button" data-src="assets/concept-8.jpg" aria-label="コンセプトアート8を拡大"><img src="assets/concept-8.jpg" alt="RAIL CITY コンセプトアート8"></button><button type="button" data-src="assets/concept-9.jpg" aria-label="コンセプトアート9を拡大"><img src="assets/concept-9.jpg" alt="RAIL CITY コンセプトアート9"></button></div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<div id="lightbox"><button id="closeLb" type="button">閉じる</button><img id="lbImg" alt="拡大コンセプトアート"></div>
+
+<script>
+(()=>{
+const title=document.getElementById('titleScreen'),game=document.getElementById('gameScreen');
+document.getElementById('startBtn').addEventListener('click',()=>{title.style.display='none';game.style.display='block';window.scrollTo(0,0)});
+const gallery=["assets/concept-1.jpg","assets/concept-2.jpg","assets/concept-3.jpg","assets/concept-4.jpg","assets/concept-5.jpg","assets/concept-6.jpg","assets/concept-7.jpg","assets/concept-8.jpg","assets/concept-9.jpg"];
+const modeVisuals={inspect:0,station:1,track:2,route:3};
+const c=document.getElementById('map'),ctx=c.getContext('2d'),W=24,H=14,CW=c.width/W,CH=c.height/H;
+const el=id=>document.getElementById(id);
+const S={cash:12000000000,revenue:0,day:1,hour:6,speed:1,mode:'inspect',stations:[],tracks:[],line:null,trains:0,route:[],trackA:null,cells:[],nextId:1,selected:null,done:new Set()};
+let last=performance.now(),acc=0;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function rand(x,y,s){let n=(x*73856093)^(y*19349663)^(s*83492791);return((n>>>0)%1000)/1000}
+function init(){S.cells=[];for(let y=0;y<H;y++)for(let x=0;x<W;x++){let r=rand(x,y,11),type='empty',lv=0;if(r<.33){type=x<9?'res':(x<16?'com':'off');lv=rand(x,y,18)<.16?2:1}S.cells.push({x,y,type,lv,access:0,land:100})}recalc()}
+const cell=(x,y)=>S.cells[y*W+x],stAt=(x,y)=>S.stations.find(s=>s.x===x&&s.y===y),stId=id=>S.stations.find(s=>s.id===id);
+function cs(z){if(z.type==='res')return{pop:[0,30,110,340,900][z.lv]||0,jobs:0};if(z.type==='com')return{pop:0,jobs:[0,20,70,220,650][z.lv]||0};if(z.type==='off')return{pop:0,jobs:[0,45,150,500,1500][z.lv]||0};return{pop:0,jobs:0}}
+function hasTrack(a,b){return S.tracks.some(t=>(t.a===a.id&&t.b===b.id)||(t.a===b.id&&t.b===a.id))}
+function recalc(){for(const z of S.cells){let b=0;for(const s of S.stations){const d=Math.hypot(z.x-s.x,z.y-s.y);if(d<5.5)b=Math.max(b,1-d/5.5)}z.access=b;z.land=100+b*500+z.lv*45}for(const s of S.stations){s.pop=0;s.jobs=0;for(const z of S.cells)if(Math.hypot(z.x-s.x,z.y-s.y)<5.5){const q=cs(z);s.pop+=q.pop;s.jobs+=q.jobs}}}
+function totals(){let p=0,j=0;for(const z of S.cells){const q=cs(z);p+=q.pop;j+=q.jobs}return{p,j}}
+function msg(t){el('notice').textContent=t}
+function addStation(x,y){if(stAt(x,y)){msg('そのマスには駅があります。');return}const cost=800000000;if(S.cash<cost){msg('資金が足りません。');return}S.cash-=cost;let s={id:S.nextId++,name:'駅'+(S.stations.length+1),x,y,waiting:0,pop:0,jobs:0,board:0,sales:0};S.stations.push(s);recalc();msg(s.name+'を開業しました。駅前の地価が上がります。')}
+function addTrack(a,b){if(!a||!b||a.id===b.id)return;if(hasTrack(a,b)){msg('すでに接続済みです。');return}const cost=Math.ceil(Math.hypot(a.x-b.x,a.y-b.y))*40000000;if(S.cash<cost){msg('線路建設資金が足りません。');return}S.cash-=cost;S.tracks.push({a:a.id,b:b.id});msg(a.name+'〜'+b.name+'を接続しました。')}
+function routeTap(s){if(S.route.includes(s.id)){msg('同じ駅は重複できません。');return}if(S.route.length){let p=stId(S.route[S.route.length-1]);if(!hasTrack(p,s)){msg('直前の駅と線路でつながっていません。');return}}S.route.push(s.id);el('routeOk').disabled=S.route.length<2;msg('路線: '+S.route.map(id=>stId(id).name).join(' → '))}
+function finishRoute(){if(S.route.length<2)return;S.line=[...S.route];S.route=[];el('routeOk').disabled=true;el('trainBtn').disabled=false;msg('路線を設定しました。列車を購入できます。')}
+function buyTrain(){if(!S.line)return;const cost=600000000;if(S.cash<cost){msg('車両購入資金が足りません。');return}S.cash-=cost;S.trains++;msg('列車を増発しました。現在 '+S.trains+' 編成です。')}
+function grow(){for(const z of S.cells){if(z.type==='empty'&&z.access>.42&&rand(z.x,z.y,S.day*33)<.11){let r=rand(z.x,z.y,S.day*57);z.type=r<.52?'res':(r<.76?'com':'off');z.lv=1}else if(z.type!=='empty'&&z.lv<4&&rand(z.x,z.y,S.day*71)<z.access*.34)z.lv++}recalc()}
+function advance(){S.hour++;if(S.hour>=24){S.hour=0;S.day++;grow()}if(S.line&&S.trains){for(const id of S.line){let s=stId(id);let rush=(S.hour>=7&&S.hour<10)||(S.hour>=17&&S.hour<20);s.waiting+=Math.round(s.pop*(rush?.006:.002));let b=Math.min(s.waiting,100*S.trains);s.waiting-=b;s.board+=b;let fare=b*260;s.sales+=fare;S.revenue+=fare;S.cash+=fare}}checkMissions()}
+const missions=[
+ {id:'a',name:'はじめての鉄道都市',desc:'3駅・1路線・収入100万円',img:4,ok:()=>S.stations.length>=3&&S.line&&S.revenue>=1000000,reward:1000000000},
+ {id:'b',name:'成長する都市圏',desc:'人口1.5万人・4駅',img:5,ok:()=>totals().p>=15000&&S.stations.length>=4,reward:2500000000},
+ {id:'c',name:'通勤大動脈',desc:'列車2編成・待ち客400人',img:6,ok:()=>S.trains>=2&&S.stations.some(s=>s.waiting>=400),reward:1500000000}
+];
+function checkMissions(){for(const m of missions)if(!S.done.has(m.id)&&m.ok()){S.done.add(m.id);S.cash+=m.reward;msg('ミッション達成「'+m.name+'」 報酬 '+(m.reward/1e8)+'億円')}}
+function pos(e){let r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height}}
+c.addEventListener('pointerup',e=>{let p=pos(e),x=clamp(Math.floor(p.x/CW),0,W-1),y=clamp(Math.floor(p.y/CH),0,H-1),s=stAt(x,y);if(S.mode==='station')addStation(x,y);else if(S.mode==='track'){if(!s){msg('駅をタップしてください。');return}if(!S.trackA){S.trackA=s;msg(s.name+'を始点に選択。次の駅をタップ。')}else{addTrack(S.trackA,s);S.trackA=null}}else if(S.mode==='route'){if(!s){msg('路線に入れる駅をタップ。');return}routeTap(s)}else{S.selected=s||cell(x,y)}render()});
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{S.mode=b.dataset.mode;S.trackA=null;if(S.mode!=='route'){S.route=[];el('routeOk').disabled=true}document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));let vi=modeVisuals[S.mode]??0;el('modeVisual').src=gallery[vi];el('sceneImage').src=gallery[(vi+1)%gallery.length];el('visualCaption').textContent=S.mode==='station'?'駅を置き、街の中心をつくる':S.mode==='track'?'線路で街と街をつなぐ':S.mode==='route'?'路線をつくり、人の流れを変える':'あなたの鉄道都市';msg(S.mode==='station'?'空いているマスをタップして駅を建設。':S.mode==='track'?'駅A→駅Bを順番にタップ。':S.mode==='route'?'線路でつながった駅を順番にタップ。':'見るモードです。')}));
+document.querySelectorAll('[data-speed]').forEach(b=>b.addEventListener('click',()=>S.speed=Number(b.dataset.speed)));
+el('routeOk').addEventListener('click',finishRoute);el('trainBtn').addEventListener('click',buyTrain);
+el('reset').addEventListener('click',()=>{Object.assign(S,{cash:12000000000,revenue:0,day:1,hour:6,speed:1,mode:'inspect',stations:[],tracks:[],line:null,trains:0,route:[],trackA:null,nextId:1,selected:null,done:new Set()});init();el('trainBtn').disabled=true;el('routeOk').disabled=true;msg('駅を2つ建設してください。')});
+function draw(){ctx.clearRect(0,0,c.width,c.height);for(const z of S.cells){let col='#263746';if(z.type==='res')col=['#263746','#4f7e59','#5e9568','#6dab78','#7cbf87'][z.lv];if(z.type==='com')col=['#263746','#987d49','#af9052','#c5a25d','#ddb667'][z.lv];if(z.type==='off')col=['#263746','#526c99','#607eae','#6e90c2','#7c9fd6'][z.lv];ctx.fillStyle=col;ctx.fillRect(z.x*CW+1,z.y*CH+1,CW-2,CH-2);if(z.access>.1){ctx.fillStyle='rgba(88,181,255,'+(z.access*.16)+')';ctx.fillRect(z.x*CW+1,z.y*CH+1,CW-2,CH-2)}}for(const t of S.tracks){let a=stId(t.a),b=stId(t.b);ctx.strokeStyle='#101418';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo((a.x+.5)*CW,(a.y+.5)*CH);ctx.lineTo((b.x+.5)*CW,(b.y+.5)*CH);ctx.stroke();ctx.strokeStyle='#d6dce1';ctx.lineWidth=2;ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo((a.x+.5)*CW,(a.y+.5)*CH);ctx.lineTo((b.x+.5)*CW,(b.y+.5)*CH);ctx.stroke();ctx.setLineDash([])}for(const s of S.stations){let x=(s.x+.5)*CW,y=(s.y+.5)*CH;ctx.fillStyle=s.waiting>500?'#ff8181':'#f7fafc';ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.fillText(s.name,x+11,y-8)}if(S.line&&S.trains){for(let i=0;i<Math.min(S.trains,S.line.length);i++){let s=stId(S.line[(S.hour+i)%S.line.length]);ctx.fillStyle='#59caff';ctx.fillRect((s.x+.5)*CW-6,(s.y+.5)*CH-15,12,7)}}}
+function render(){let t=totals();el('cash').textContent=(S.cash/1e8).toFixed(1)+'億円';el('pop').textContent=t.p.toLocaleString()+'人';el('rev').textContent=Math.round(S.revenue/10000).toLocaleString()+'万円';el('time').textContent='Day '+S.day+' '+String(S.hour).padStart(2,'0')+':00';el('speed').textContent=S.speed===0?'停止':'×'+S.speed;let info='駅・列車・街区をタップしてください。';if(S.selected){if('waiting'in S.selected)info='<b>'+S.selected.name+'</b><br>駅勢圏人口 '+S.selected.pop.toLocaleString()+'人<br>待ち客 '+S.selected.waiting.toLocaleString()+'人<br>累計乗車 '+S.selected.board.toLocaleString()+'人<br>駅売上 '+Math.round(S.selected.sales/10000).toLocaleString()+'万円';else{let q=cs(S.selected);info='<b>'+(S.selected.type==='res'?'住宅':S.selected.type==='com'?'商業':S.selected.type==='off'?'オフィス':'空地')+' Lv'+S.selected.lv+'</b><br>人口 '+q.pop+' / 雇用 '+q.jobs+'<br>地価 '+Math.round(S.selected.land)+'<br>駅アクセス '+Math.round(S.selected.access*100)+'%'}}el('info').innerHTML=info;el('missions').innerHTML=missions.map(m=>'<div class="mission"><img src="'+gallery[m.img%gallery.length]+'" alt=""><div><b>'+(S.done.has(m.id)?'✅ ':'⬜ ')+m.name+'</b><span>'+m.desc+' / 報酬 '+(m.reward/1e8)+'億円</span></div></div>').join('');draw()}
+function frame(now){let dt=Math.min(.05,(now-last)/1000);last=now;if(S.speed){acc+=dt*S.speed;while(acc>=1){acc-=1;advance()}}render();requestAnimationFrame(frame)}init();render();requestAnimationFrame(frame);
+document.querySelectorAll('#gallery button').forEach(b=>b.addEventListener('click',()=>{el('lbImg').src=b.dataset.src;el('lightbox').classList.add('open')}));el('closeLb').addEventListener('click',()=>el('lightbox').classList.remove('open'));el('lightbox').addEventListener('click',e=>{if(e.target===el('lightbox'))el('lightbox').classList.remove('open')});
+})();
+</script>
+</body>
+</html>
