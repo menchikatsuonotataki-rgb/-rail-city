@@ -99,13 +99,101 @@
   .mapTitle{top:48px}
 }
 
+
+/* v10: concept-board style railway construction UI */
+.constructionHud{position:absolute;inset:0;z-index:8;pointer-events:none}
+.constructionHud.hidden{display:none}
+.buildToolRail,.shapeRail,.buildConfirmBar{pointer-events:auto}
+.buildToolRail{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  display:grid;gap:5px;padding:6px;border-radius:14px;
+  background:rgba(6,19,31,.86);border:1px solid rgba(111,174,219,.42);
+  box-shadow:0 10px 28px rgba(0,0,0,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+}
+.buildToolRail button{
+  width:66px;min-height:58px;padding:5px 4px;border-radius:10px;
+  border:1px solid #34566f;background:#132b41;font-weight:850;font-size:10px
+}
+.buildToolRail button span{display:block;font-size:21px;line-height:1.05;margin-bottom:3px}
+.buildToolRail button.active{background:linear-gradient(180deg,#1199eb,#0c67b5);border-color:#70d2ff;box-shadow:0 0 0 1px rgba(91,196,255,.25)}
+.buildToolRail button:disabled{opacity:.45;filter:saturate(.35)}
+.shapeRail{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:92px;padding:7px;border-radius:13px;
+  background:rgba(6,19,31,.86);border:1px solid rgba(111,174,219,.42);
+  box-shadow:0 10px 28px rgba(0,0,0,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+}
+.shapeRail strong{display:block;text-align:center;font-size:10px;color:#b9cede;margin-bottom:5px}
+.shapeRail button{
+  width:100%;min-height:48px;margin:3px 0;padding:5px 3px;border-radius:9px;
+  border:1px solid #385c75;background:#142e45;font-size:10px;font-weight:800
+}
+.shapeRail button span{display:block;font-size:20px;line-height:1.1}
+.shapeRail button.active{border-color:#69ccff;background:#174f75}
+.buildConfirmBar{
+  position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
+  width:min(560px,calc(100% - 190px));display:grid;grid-template-columns:1fr 160px;gap:8px;
+  padding:9px;border-radius:14px;background:rgba(5,17,28,.91);
+  border:1px solid rgba(103,171,219,.46);box-shadow:0 12px 34px rgba(0,0,0,.3);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+}
+.buildStats{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;align-content:center;padding:2px 7px}
+.buildStats small{display:block;color:#9db5c7;font-size:9px}
+.buildStats b{display:block;font-size:14px}
+.buildNow{
+  min-height:58px;border-radius:11px;border:1px solid #4ee0a0!important;
+  background:linear-gradient(180deg,#1cbb72,#11834e)!important;
+  font-size:16px!important;font-weight:950!important;
+  box-shadow:0 7px 20px rgba(24,181,108,.2)
+}
+.buildNow:disabled{opacity:.42}
+@media(max-width:640px){
+  .buildToolRail{left:5px;top:48%;padding:4px;gap:3px}
+  .buildToolRail button{width:54px;min-height:49px;font-size:8px;padding:3px}
+  .buildToolRail button span{font-size:17px}
+  .shapeRail{right:5px;top:47%;width:70px;padding:4px}
+  .shapeRail strong{font-size:8px}
+  .shapeRail button{min-height:42px;font-size:8px;margin:2px 0}
+  .shapeRail button span{font-size:16px}
+  .buildConfirmBar{
+    bottom:7px;width:calc(100% - 132px);grid-template-columns:1fr 112px;
+    gap:5px;padding:6px;border-radius:11px
+  }
+  .buildStats{gap:2px 7px;padding:0 3px}
+  .buildStats small{font-size:7px}.buildStats b{font-size:10px}
+  .buildNow{min-height:48px;font-size:12px!important}
+  #game.track-construction .toolbar,#game.track-construction .subbar{display:none}
+}
+
 </style>
 </head>
 <body>
 <section id="title"><div class="titleCard"><div class="logo">RAIL CITY<small>レールシティ</small></div><div class="tag">イラストではなく、街そのものをつくる。</div><p class="lead">道路・建物・公園・線路・駅・列車を別々のゲームオブジェクトとして描画。線路を敷くと建物が立ち退き、駅の周辺が実際に成長し、列車がその線路を走ります。</p><div class="titleActions"><button class="primary" id="newGame">＋ 新しい都市</button><button class="secondary" id="continueGame">▶ つづきから</button></div></div></section>
 <main id="game">
 <div class="top"><div class="stat"><small>会社資金</small><b id="cash">180.0億円</b><span class="delta">建設と経営</span></div><div class="stat"><small>都市人口</small><b id="pop">0人</b><span class="delta" id="growth">+0 / 日</span></div><div class="stat"><small>鉄道収入</small><b id="rev">0万円</b><span class="delta" id="pax">0人 輸送</span></div><div class="stat"><small>日時</small><b id="time">Day 1 07:00</b><span class="delta" id="daypart">朝</span></div><div class="stat"><small>速度</small><b id="speed">×1</b><span class="delta">2.5D都市</span></div></div>
-<div class="layout"><section class="main"><div class="mapWrap"><canvas id="world" width="1080" height="720"></canvas><div class="mapTitle"><b id="modeTitle">線路建設</b><span id="modeHelp">街の地面をタップして線路のルートを決めます。</span></div><div class="legend">道路・建物・公園・線路・駅・列車はすべて別オブジェクト</div></div>
+<div class="layout"><section class="main"><div class="mapWrap"><canvas id="world" width="1080" height="720"></canvas><div class="mapTitle"><b id="modeTitle">線路建設</b><span id="modeHelp">指でなぞって始点から終点まで線路を計画します。</span></div><div class="legend">道路・建物・公園・線路・駅・列車はすべて別オブジェクト</div>
+<div id="constructionHud" class="constructionHud">
+  <div class="buildToolRail">
+    <button class="active" data-buildmode="track"><span>🛤️</span>線路</button>
+    <button data-buildmode="station"><span>🚉</span>駅</button>
+    <button disabled><span>🌉</span>橋・高架</button>
+    <button disabled><span>🚇</span>トンネル</button>
+    <button disabled><span>✕</span>撤去</button>
+  </div>
+  <div class="shapeRail">
+    <strong>線形</strong>
+    <button data-trackshape="straight"><span>╱</span>直線</button>
+    <button class="active" data-trackshape="curve"><span>〰</span>カーブ</button>
+    <button data-trackshape="branch"><span>⑂</span>分岐</button>
+  </div>
+  <div class="buildConfirmBar">
+    <div class="buildStats">
+      <div><small>建設費</small><b id="buildCost">0万円</b></div>
+      <div><small>距離</small><b id="buildDistance">0.0 km</b></div>
+    </div>
+    <button id="buildNow" class="buildNow" disabled>建設する</button>
+  </div>
+</div></div>
 <div class="toolbar"><button class="gold active" data-mode="track"><span>🛤️</span>線路建設</button><button data-mode="station"><span>🚉</span>駅建設</button><button data-action="line"><span>🗺️</span>路線開業</button><button class="green" data-action="train"><span>🚆</span>列車購入</button><button data-speed="0"><span>⏸</span>停止</button><button data-speed="1"><span>▶</span>×1</button><button data-speed="2"><span>⏩</span>×2</button><button data-speed="4"><span>⏩</span>×4</button></div>
 <div class="subbar"><button class="action" id="confirmTrack">線路を確定</button><button id="undoPoint">1点戻す</button><button id="cancelDraft">キャンセル</button><button id="zoomIn">＋拡大</button><button id="zoomOut">－縮小</button><button id="fullscreenBtn">⛶ 全画面</button><button id="saveBtn">保存</button><button id="resetBtn">最初から</button></div></section>
 <aside class="side"><section class="card visual"><img id="visualImage" alt="企画ボード"><div class="cap"><h3>企画ボードの世界観をゲームへ</h3><div class="muted">画像は演出用。実際のプレイ画面は固定画像ではなく、都市を毎フレーム描画しています。</div></div></section><section class="card"><h3>プレイ手順</h3><div id="steps"></div></section><section class="card"><h3>選択・路線情報</h3><div id="info" class="muted"></div><div id="lineList"></div></section><section class="card"><h3>都市ニュース</h3><div class="news" id="news">最初の線路を計画してください。</div></section></aside></div>
@@ -117,7 +205,7 @@ const ASSETS={"hero": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA
 'use strict';
 const $=id=>document.getElementById(id),c=$('world'),ctx=c.getContext('2d');$('title').style.backgroundImage=`url("${ASSETS.hero}")`;$('visualImage').src=ASSETS.board;
 const SAVE='railcity_2_5d_v8',GW=22,GH=18,TW=48,TH=26,OX=540,OY=76,stationNames=['桜ヶ丘','中央公園','みなと','青葉台','川辺','新都心','緑ヶ丘','港南','山手','湖畔','朝日町','未来台'];
-const S={cash:18e9,revenue:0,totalPax:0,day:1,hour:7,speed:1,mode:'track',draft:[],tracks:[],stations:[],lines:[],trains:[],lots:[],nextTrack:1,nextStation:1,nextLine:1,nextTrain:1,selectedTrack:null,zoom:1,panX:0,panY:0,lastPop:0,news:'最初の線路を計画してください。'};
+const S={cash:18e9,revenue:0,totalPax:0,day:1,hour:7,speed:1,mode:'track',trackShape:'curve',draft:[],tracks:[],stations:[],lines:[],trains:[],lots:[],nextTrack:1,nextStation:1,nextLine:1,nextTrain:1,selectedTrack:null,zoom:1,panX:0,panY:0,lastPop:0,news:'最初の線路を計画してください。'};
 let last=performance.now(),simAcc=0,autoAcc=0;
 function rand(x,y,s){let n=(x*73856093)^(y*19349663)^(s*83492791);return((n>>>0)%1000)/1000}
 function iso(x,y){return{x:OX+(x-y)*TW*.5,y:OY+(x+y)*TH*.5}}
@@ -140,21 +228,31 @@ function nearestTrack(p){let best=null,bt=null,prog=0;for(const t of S.tracks){l
 function recalcAccess(){for(const z of S.lots){if(z.road||z.water)continue;let best=0;for(const s of S.stations){let d=Math.hypot(z.x+.5-s.x,z.y+.5-s.y);if(d<4.6)best=Math.max(best,1-d/4.6)}z.access=best}}
 function demolishAlongTrack(t){for(const z of S.lots){if(z.road||z.water||z.type==='park')continue;let p={x:z.x+.5,y:z.y+.5},near=999;for(let i=1;i<t.points.length;i++)near=Math.min(near,segNear(p,t.points[i-1],t.points[i]).d);if(near<.48){z.type='empty';z.lv=0}}}
 function save(){try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}}
-function load(){try{let v=JSON.parse(localStorage.getItem(SAVE)||'null');if(!v)return false;Object.assign(S,v);return true}catch(e){return false}}
-function start(fresh){if(fresh){Object.assign(S,{cash:18e9,revenue:0,totalPax:0,day:1,hour:7,speed:1,mode:'track',draft:[],tracks:[],stations:[],lines:[],trains:[],lots:[],nextTrack:1,nextStation:1,nextLine:1,nextTrain:1,selectedTrack:null,zoom:1,panX:0,panY:0,lastPop:0,news:'最初の線路を計画してください。'});initLots();recalcAccess();S.lastPop=totals().p;save()}else if(!load()){initLots();recalcAccess();S.lastPop=totals().p} $('title').style.display='none';$('game').style.display='block';setMode('track');render()}
+function load(){try{let v=JSON.parse(localStorage.getItem(SAVE)||'null');if(!v)return false;Object.assign(S,v);if(!S.trackShape)S.trackShape='curve';return true}catch(e){return false}}
+function start(fresh){if(fresh){Object.assign(S,{cash:18e9,revenue:0,totalPax:0,day:1,hour:7,speed:1,mode:'track',trackShape:'curve',draft:[],tracks:[],stations:[],lines:[],trains:[],lots:[],nextTrack:1,nextStation:1,nextLine:1,nextTrain:1,selectedTrack:null,zoom:1,panX:0,panY:0,lastPop:0,news:'最初の線路を計画してください。'});initLots();recalcAccess();S.lastPop=totals().p;save()}else if(!load()){initLots();recalcAccess();S.lastPop=totals().p} $('title').style.display='none';$('game').style.display='block';setMode('track');render()}
 $('newGame').onclick=()=>start(true);$('continueGame').onclick=()=>start(false);$('continueGame').disabled=!localStorage.getItem(SAVE);
 function notify(t){S.news=t;$('news').textContent=t}function event(title,text,img){$('eventTitle').textContent=title;$('eventText').textContent=text;$('eventImg').src=img;$('event').classList.add('open')}$('eventClose').onclick=()=>$('event').classList.remove('open');
-function trackCost(points){let l=0;for(let i=1;i<points.length;i++)l+=dist(points[i-1],points[i]);return Math.round(l*1.55e8)}
-function confirmTrack(){if(S.draft.length<2){notify('街の地面を2点以上タップして線路を描いてください。');return}let cost=trackCost(S.draft);if(S.cash<cost){notify('線路建設資金が足りません。');return}S.cash-=cost;let t={id:S.nextTrack++,name:'鉄道路線 '+S.nextTrack,points:S.draft.map(p=>({...p})),color:['#3fbaff','#ff6f9f','#4ed89a','#f6b84a','#9478ff'][S.tracks.length%5]};S.tracks.push(t);S.selectedTrack=t.id;demolishAlongTrack(t);S.draft=[];S.mode='station';notify('線路が完成。沿線の建物を整理しました。次は線路上に駅を建設してください。');event('線路が街に通りました','これは背景画像への線ではなく、都市データ上の鉄道です。線路沿いの建物が立ち退き、次に駅周辺が発展します。',ASSETS.future);recalcAccess();render()}
+function trackLengthDraft(points){let l=0;for(let i=1;i<points.length;i++)l+=dist(points[i-1],points[i]);return l}
+function trackCost(points){return Math.round(trackLengthDraft(points)*1.35e7)}
+function formatBuildYen(v){let oku=Math.floor(v/1e8),man=Math.round((v%1e8)/1e4);if(oku>0)return oku+'億'+(man?man.toLocaleString()+'万円':'円');return man.toLocaleString()+'万円'}
+function trackDistanceText(points){let u=trackLengthDraft(points);return (u*.1).toFixed(1)+' km ('+Math.round(u)+'マス)'}
+function confirmTrack(){if(S.draft.length<2){notify('街の地面を2点以上タップして線路を描いてください。');return}let cost=trackCost(S.draft);if(S.cash<cost){notify('線路建設資金が足りません。');return}S.cash-=cost;let t={id:S.nextTrack++,name:'鉄道路線 '+S.nextTrack,points:S.draft.map(p=>({...p})),color:['#3fbaff','#ff6f9f','#4ed89a','#f6b84a','#9478ff'][S.tracks.length%5]};S.tracks.push(t);S.selectedTrack=t.id;demolishAlongTrack(t);S.draft=[];setMode('station');notify('線路が完成。沿線の建物を整理しました。次は線路上に駅を建設してください。');event('線路が街に通りました','これは背景画像への線ではなく、都市データ上の鉄道です。線路沿いの建物が立ち退き、次に駅周辺が発展します。',ASSETS.future);recalcAccess();render()}
 function placeStation(p){let n=nearestTrack(p);if(!n||n.d>1.0){notify('駅は完成した線路の近くに置いてください。');return}if(S.stations.some(s=>s.trackId===n.track.id&&Math.abs(s.progress-n.progress)<.08)){notify('駅同士が近すぎます。');return}let cost=12e8;if(S.cash<cost){notify('駅建設資金が足りません。');return}S.cash-=cost;let s={id:S.nextStation++,name:stationNames[(S.nextStation-2)%stationNames.length]+'駅',trackId:n.track.id,x:n.x,y:n.y,progress:n.progress,pax:0,sales:0};S.stations.push(s);S.selectedTrack=n.track.id;recalcAccess();notify(s.name+'が開業。駅周辺の土地需要が上昇しました。');if(S.stations.length===1)event('最初の駅が開業','駅の勢圏に入った街区は、これから住宅や商業施設が成長していきます。',ASSETS.board);render()}
 function openLine(){let t=S.tracks.find(x=>x.id===S.selectedTrack)||S.tracks[S.tracks.length-1];if(!t){notify('先に線路を建設してください。');return}let sts=S.stations.filter(s=>s.trackId===t.id).sort((a,b)=>a.progress-b.progress);if(sts.length<2){notify('同じ線路上に2駅以上必要です。');return}if(S.lines.some(l=>l.trackId===t.id)){notify('この線路にはすでに路線があります。');return}let l={id:S.nextLine++,name:'レールシティ線 '+S.nextLine,trackId:t.id,color:t.color,stationIds:sts.map(s=>s.id)};S.lines.push(l);notify(l.name+'が開業しました。列車を購入できます。');event('新路線 開業！',sts.map(s=>s.name).join(' → ')+' を結ぶ営業路線が誕生しました。',ASSETS.future);render()}
 function buyTrain(){if(!S.lines.length){notify('先に路線を開業してください。');return}let line=S.lines[S.lines.length-1],cost=7e8;if(S.cash<cost){notify('車両購入資金が足りません。');return}S.cash-=cost;S.trains.push({id:S.nextTrain++,name:'通勤型'+String(S.nextTrain).padStart(2,'0'),lineId:line.id,t:Math.random(),dir:1,cap:650,pax:0});notify('列車が運行を開始しました。');render()}
 function growCity(){let before=totals().p;for(const z of S.lots){if(z.road||z.water)continue;if(z.type==='park')continue;if(z.type==='empty'&&z.access>.36&&rand(z.x,z.y,S.day*31)<.20){let r=rand(z.x,z.y,S.day*57);z.type=r<.56?'res':r<.79?'com':'off';z.lv=1}else if((z.type==='res'||z.type==='com'||z.type==='off')&&z.lv<4&&rand(z.x,z.y,S.day*73)<z.access*.48)z.lv++}let after=totals().p;let inc=after-before;S.lastPop=after;notify(inc>0?'駅前開発が進み、人口が '+inc.toLocaleString()+' 人増えました。':'街は安定しています。さらに駅を増やすと発展しやすくなります。');if(after>=45000&&before<45000)event('大都市へ成長！','高層住宅・オフィスが増え、鉄道を中心とした都市圏が形成されました。',ASSETS.hero)}
 function simHour(){S.hour++;if(S.hour>=24){S.hour=0;S.day++;growCity()}let rush=(S.hour>=7&&S.hour<10)||(S.hour>=17&&S.hour<20);for(const tr of S.trains){let line=S.lines.find(l=>l.id===tr.lineId);if(!line)continue;let riders=Math.min(tr.cap,Math.round((rush?430:180)*(1+line.stationIds.length*.12)));tr.pax=riders;S.totalPax+=riders;let fare=riders*290;S.revenue+=fare;S.cash+=fare;for(const sid of line.stationIds){let s=S.stations.find(x=>x.id===sid);if(s){s.pax+=Math.round(riders/line.stationIds.length);s.sales+=Math.round(fare/line.stationIds.length)}}}save()}
 function daypart(){return S.hour<5?'深夜':S.hour<10?'朝':S.hour<17?'昼':S.hour<20?'夕方':'夜'}
-function setMode(m){S.mode=m;document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));if(m==='track'){$('modeTitle').textContent='線路建設';$('modeHelp').textContent='街の地面をタップしてルートを作り、「線路を確定」。'}else{$('modeTitle').textContent='駅建設';$('modeHelp').textContent='完成した線路の近くをタップして駅を建設。'}render()}
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));document.querySelector('[data-action="line"]').onclick=openLine;document.querySelector('[data-action="train"]').onclick=buyTrain;document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{S.speed=+b.dataset.speed;render()});$('fullscreenBtn').onclick=async()=>{try{let target=$('game');if(target.requestFullscreen){await target.requestFullscreen();}else if(target.webkitRequestFullscreen){target.webkitRequestFullscreen();}notify('全画面表示にしました。');}catch(e){notify('Safariではこのまま画面いっぱいで表示します。さらに広くする場合は「共有」→「ホーム画面に追加」を使えます。');}};$('confirmTrack').onclick=confirmTrack;$('undoPoint').onclick=()=>{S.draft.pop();render()};$('cancelDraft').onclick=()=>{S.draft=[];render()};$('zoomIn').onclick=()=>{S.zoom=Math.min(1.35,S.zoom+.1);render()};$('zoomOut').onclick=()=>{S.zoom=Math.max(.72,S.zoom-.1);render()};$('saveBtn').onclick=()=>{save();notify('保存しました。')};$('resetBtn').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};
-c.addEventListener('pointerup',e=>{let p=screenToWorld(e);if(S.mode==='track'){if(S.draft.length&&dist(S.draft[S.draft.length-1],p)<.5)return;S.draft.push({x:Math.round(p.x*2)/2,y:Math.round(p.y*2)/2});render()}else if(S.mode==='station')placeStation(p)});
+function setMode(m){S.mode=m;document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));document.querySelectorAll('[data-buildmode]').forEach(b=>b.classList.toggle('active',b.dataset.buildmode===m));$('constructionHud').classList.toggle('hidden',m!=='track');$('game').classList.toggle('track-construction',m==='track');if(m==='track'){$('modeTitle').textContent='線路建設';$('modeHelp').textContent='指でなぞって始点から終点までルートを描きます。';}else{$('modeTitle').textContent='駅建設';$('modeHelp').textContent='完成した線路の近くをタップして駅を建設。'}render()}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));document.querySelectorAll('[data-buildmode]').forEach(b=>b.onclick=()=>setMode(b.dataset.buildmode));
+document.querySelectorAll('[data-trackshape]').forEach(b=>b.onclick=()=>{S.trackShape=b.dataset.trackshape;S.draft=[];document.querySelectorAll('[data-trackshape]').forEach(x=>x.classList.toggle('active',x.dataset.trackshape===S.trackShape));notify(S.trackShape==='straight'?'直線モード：始点から終点までドラッグしてください。':S.trackShape==='branch'?'分岐モード：既存線路から外へドラッグしてください。':'カーブモード：指でなぞった形に線路を計画します。');render()});
+$('buildNow').onclick=confirmTrack;document.querySelector('[data-action="line"]').onclick=openLine;document.querySelector('[data-action="train"]').onclick=buyTrain;document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{S.speed=+b.dataset.speed;render()});$('fullscreenBtn').onclick=async()=>{try{let target=$('game');if(target.requestFullscreen){await target.requestFullscreen();}else if(target.webkitRequestFullscreen){target.webkitRequestFullscreen();}notify('全画面表示にしました。');}catch(e){notify('Safariではこのまま画面いっぱいで表示します。さらに広くする場合は「共有」→「ホーム画面に追加」を使えます。');}};$('confirmTrack').onclick=confirmTrack;$('undoPoint').onclick=()=>{S.draft.pop();render()};$('cancelDraft').onclick=()=>{S.draft=[];render()};$('zoomIn').onclick=()=>{S.zoom=Math.min(1.35,S.zoom+.1);render()};$('zoomOut').onclick=()=>{S.zoom=Math.max(.72,S.zoom-.1);render()};$('saveBtn').onclick=()=>{save();notify('保存しました。')};$('resetBtn').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};
+let trackDrawing=false,trackPointer=null;
+function snapTrackPoint(p){return{x:Math.round(p.x*4)/4,y:Math.round(p.y*4)/4}}
+function beginTrackDraw(e){if(S.mode!=='track')return;e.preventDefault();let p=snapTrackPoint(screenToWorld(e));if(S.trackShape==='branch'){let n=nearestTrack(p);if(!n||n.d>1.25){notify('分岐は既存線路の近くから描き始めてください。');return}p={x:n.x,y:n.y}}trackDrawing=true;trackPointer=e.pointerId;S.draft=[p];try{c.setPointerCapture(e.pointerId)}catch(_){ }render()}
+function moveTrackDraw(e){if(!trackDrawing||S.mode!=='track'||e.pointerId!==trackPointer)return;e.preventDefault();let p=snapTrackPoint(screenToWorld(e)),a=S.draft[0];if(S.trackShape==='straight'){S.draft=[a,p]}else{let last=S.draft[S.draft.length-1];if(!last||dist(last,p)>.18)S.draft.push(p);else S.draft[S.draft.length-1]=p}render()}
+function endTrackDraw(e){if(S.mode==='track'&&trackDrawing&&e.pointerId===trackPointer){let p=snapTrackPoint(screenToWorld(e));if(S.draft.length===1&&dist(S.draft[0],p)>.1)S.draft.push(p);trackDrawing=false;trackPointer=null;render();return}if(S.mode==='station'){placeStation(screenToWorld(e))}}
+c.addEventListener('pointerdown',beginTrackDraw);c.addEventListener('pointermove',moveTrackDraw);c.addEventListener('pointerup',endTrackDraw);c.addEventListener('pointercancel',()=>{trackDrawing=false;trackPointer=null});
 function poly(points,fill,stroke){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}}
 function diamond(x,y,fill){let p=worldToScreen(x+.5,y+.5),w=TW*.5*S.zoom,h=TH*.5*S.zoom;poly([{x:p.x,y:p.y-h},{x:p.x+w,y:p.y},{x:p.x,y:p.y+h},{x:p.x-w,y:p.y}],fill,null)}
 function building(z){let c0=worldToScreen(z.x+.5,z.y+.5),scale=S.zoom,w=(TW*.52)*scale,d=(TH*.54)*scale,h=(14+z.lv*13)*scale,topY=c0.y-h;let palette=z.type==='res'?['#f4eadb','#c3aa8e','#8b7864']:z.type==='com'?['#f0d28b','#b58b4e','#7e613a']:['#9bc8e7','#628eae','#3f6885'];let light=daypart()==='夜'||daypart()==='深夜';let top=[{x:c0.x,y:topY-d/2},{x:c0.x+w/2,y:topY},{x:c0.x,y:topY+d/2},{x:c0.x-w/2,y:topY}],left=[top[3],top[2],{x:c0.x,y:c0.y+d/2},{x:c0.x-w/2,y:c0.y}],right=[top[1],top[2],{x:c0.x,y:c0.y+d/2},{x:c0.x+w/2,y:c0.y}];poly(left,palette[1]);poly(right,palette[2]);poly(top,palette[0]);if(z.lv>=2){ctx.fillStyle=light?'#ffe6a6':'rgba(225,245,255,.72)';for(let i=1;i<z.lv+1;i++){let yy=topY+8*i*scale;ctx.fillRect(c0.x-w*.28,yy,w*.12,3*scale);ctx.fillRect(c0.x+w*.08,yy,w*.12,3*scale)}}}
@@ -162,8 +260,10 @@ function tree(z){let p=worldToScreen(z.x+.5,z.y+.5),s=S.zoom;ctx.fillStyle='#5a4
 function drawTrack(t,preview){ctx.lineJoin='round';ctx.lineCap='round';let pts=t.points.map(p=>worldToScreen(p.x,p.y));ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.strokeStyle=preview?'rgba(77,194,255,.95)':'rgba(20,25,29,.95)';ctx.lineWidth=(preview?7:10)*S.zoom;ctx.setLineDash(preview?[12*S.zoom,8*S.zoom]:[]);ctx.stroke();if(!preview){ctx.strokeStyle='#d8e0e5';ctx.lineWidth=2.2*S.zoom;ctx.setLineDash([8*S.zoom,7*S.zoom]);ctx.stroke()}ctx.setLineDash([])}
 function drawStation(s){let p=worldToScreen(s.x,s.y),sc=S.zoom;ctx.fillStyle='rgba(65,187,255,.16)';ctx.beginPath();ctx.arc(p.x,p.y,23*sc,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f7fbff';ctx.strokeStyle='#1b6c9b';ctx.lineWidth=2*sc;ctx.beginPath();ctx.roundRect(p.x-15*sc,p.y-9*sc,30*sc,15*sc,4*sc);ctx.fill();ctx.stroke();ctx.fillStyle='#2ba6ea';ctx.fillRect(p.x-15*sc,p.y-9*sc,30*sc,4*sc);ctx.font=`${Math.max(9,11*sc)}px sans-serif`;ctx.fillStyle='#fff';ctx.strokeStyle='rgba(7,20,32,.9)';ctx.lineWidth=3;ctx.strokeText(s.name,p.x+18*sc,p.y-10*sc);ctx.fillText(s.name,p.x+18*sc,p.y-10*sc)}
 function drawTrain(tr){let line=S.lines.find(l=>l.id===tr.lineId),t=line&&S.tracks.find(x=>x.id===line.trackId);if(!t)return;let q=pointAt(t,tr.t),p=worldToScreen(q.x,q.y),ang=q.ang+Math.atan2(TH,TW)*.0,sc=S.zoom;ctx.save();ctx.translate(p.x,p.y-8*sc);ctx.rotate(ang*.68);ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(-13*sc,-2*sc,29*sc,9*sc);ctx.fillStyle='#edf9ff';ctx.fillRect(-14*sc,-7*sc,28*sc,9*sc);ctx.fillStyle='#178cca';ctx.fillRect(-14*sc,-7*sc,28*sc,3*sc);ctx.fillStyle='#17374f';for(let x=-9;x<=6;x+=6)ctx.fillRect(x*sc,-3*sc,4*sc,2.5*sc);ctx.restore()}
-function draw(){ctx.clearRect(0,0,c.width,c.height);let part=daypart();let sky=part==='夜'||part==='深夜'?'#10233d':part==='夕方'?'#c68d78':'#9fd0ee';ctx.fillStyle=sky;ctx.fillRect(0,0,c.width,c.height);for(let s=0;s<GW+GH-1;s++)for(let y=0;y<GH;y++){let x=s-y;if(x<0||x>=GW)continue;let z=lot(x,y);if(z.water){diamond(x,y,part==='夜'?'#1c4e71':'#4e9fc3');continue}if(z.road){diamond(x,y,part==='夜'?'#323c45':'#555e64');let p=worldToScreen(x+.5,y+.5);ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x-9*S.zoom,p.y);ctx.lineTo(p.x+9*S.zoom,p.y);ctx.stroke();continue}diamond(x,y,z.access>.35?'#7f9e69':'#718b60');if(z.type==='park'||z.type==='empty'){if(rand(x,y,4)<.55)tree(z)}else building(z)}for(const t of S.tracks)drawTrack(t,false);if(S.draft.length>=2)drawTrack({points:S.draft},true);for(const s of S.stations)drawStation(s);for(const tr of S.trains)drawTrain(tr);if(part==='夜'||part==='深夜'){ctx.fillStyle='rgba(6,21,48,.22)';ctx.fillRect(0,0,c.width,c.height)}}
-function render(){let t=totals();$('cash').textContent=(S.cash/1e8).toFixed(1)+'億円';$('pop').textContent=t.p.toLocaleString()+'人';$('growth').textContent=(t.p-S.lastPop>=0?'+':'')+(t.p-S.lastPop).toLocaleString()+' / 日';$('rev').textContent=Math.round(S.revenue/1e4).toLocaleString()+'万円';$('pax').textContent=S.totalPax.toLocaleString()+'人 輸送';$('time').textContent='Day '+S.day+' '+String(S.hour).padStart(2,'0')+':00';$('daypart').textContent=daypart();$('speed').textContent=S.speed===0?'停止':'×'+S.speed;$('news').textContent=S.news;let a=S.tracks.length>0,b=S.stations.length>=2,d=S.lines.length>0,e=S.trains.length>0;$('steps').innerHTML=[['1','線路を敷く','街の建物を避けながら自由にルートをつくる',a],['2','駅を建設','線路上に2駅以上を置く',b],['3','路線を開業','駅間の営業運転を設定',d],['4','列車を走らせる','列車を購入し、街を成長させる',e]].map(x=>`<div class="step ${x[3]?'done':''}"><div class="num">${x[3]?'✓':x[0]}</div><div><b>${x[1]}</b><span>${x[2]}</span></div></div>`).join('');$('info').innerHTML=S.mode==='track'?`仮線路 ${S.draft.length}点<br>概算建設費 ${(trackCost(S.draft)/1e8).toFixed(1)}億円`:'線路の近くをタップして駅を置きます。';$('lineList').innerHTML=S.lines.map(l=>`<div class="lineCard"><b style="color:${l.color}">${l.name}</b><span>${l.stationIds.length}駅｜${S.trains.filter(x=>x.lineId===l.id).length}編成</span></div>`).join('');draw()}
+function drawBuildMarker(p,color,label){let q=worldToScreen(p.x,p.y),sc=Math.max(.85,S.zoom);ctx.save();ctx.shadowColor='rgba(0,0,0,.35)';ctx.shadowBlur=8;ctx.fillStyle=color;ctx.beginPath();ctx.arc(q.x,q.y,13*sc,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(q.x,q.y,5*sc,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.font='bold '+Math.max(12,13*sc)+'px sans-serif';let w=ctx.measureText(label).width+14;ctx.fillStyle=color;ctx.fillRect(q.x-w/2,q.y-38*sc,w,22*sc);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,q.x,q.y-27*sc);ctx.restore()}
+function drawDraftNodes(){if(S.draft.length<1)return;let step=Math.max(1,Math.floor(S.draft.length/8));for(let i=step;i<S.draft.length-1;i+=step){let q=worldToScreen(S.draft[i].x,S.draft[i].y);ctx.fillStyle='#fff';ctx.strokeStyle='#39c8ff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(q.x,q.y,4.5*Math.max(.8,S.zoom),0,Math.PI*2);ctx.fill();ctx.stroke()}drawBuildMarker(S.draft[0],'#18b95f','始点');if(S.draft.length>1)drawBuildMarker(S.draft[S.draft.length-1],'#ef4949','終点')}
+function draw(){ctx.clearRect(0,0,c.width,c.height);let part=daypart();let sky=part==='夜'||part==='深夜'?'#10233d':part==='夕方'?'#c68d78':'#9fd0ee';ctx.fillStyle=sky;ctx.fillRect(0,0,c.width,c.height);for(let s=0;s<GW+GH-1;s++)for(let y=0;y<GH;y++){let x=s-y;if(x<0||x>=GW)continue;let z=lot(x,y);if(z.water){diamond(x,y,part==='夜'?'#1c4e71':'#4e9fc3');continue}if(z.road){diamond(x,y,part==='夜'?'#323c45':'#555e64');let p=worldToScreen(x+.5,y+.5);ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x-9*S.zoom,p.y);ctx.lineTo(p.x+9*S.zoom,p.y);ctx.stroke();continue}diamond(x,y,z.access>.35?'#7f9e69':'#718b60');if(z.type==='park'||z.type==='empty'){if(rand(x,y,4)<.55)tree(z)}else building(z)}for(const t of S.tracks)drawTrack(t,false);if(S.draft.length>=2)drawTrack({points:S.draft},true);if(S.mode==='track'&&S.draft.length)drawDraftNodes();for(const s of S.stations)drawStation(s);for(const tr of S.trains)drawTrain(tr);if(part==='夜'||part==='深夜'){ctx.fillStyle='rgba(6,21,48,.22)';ctx.fillRect(0,0,c.width,c.height)}}
+function render(){let t=totals();let buildCost=trackCost(S.draft);if($('buildCost'))$('buildCost').textContent=formatBuildYen(buildCost);if($('buildDistance'))$('buildDistance').textContent=trackDistanceText(S.draft);if($('buildNow'))$('buildNow').disabled=S.draft.length<2||buildCost>S.cash;document.querySelectorAll('[data-trackshape]').forEach(x=>x.classList.toggle('active',x.dataset.trackshape===S.trackShape));$('cash').textContent=(S.cash/1e8).toFixed(1)+'億円';$('pop').textContent=t.p.toLocaleString()+'人';$('growth').textContent=(t.p-S.lastPop>=0?'+':'')+(t.p-S.lastPop).toLocaleString()+' / 日';$('rev').textContent=Math.round(S.revenue/1e4).toLocaleString()+'万円';$('pax').textContent=S.totalPax.toLocaleString()+'人 輸送';$('time').textContent='Day '+S.day+' '+String(S.hour).padStart(2,'0')+':00';$('daypart').textContent=daypart();$('speed').textContent=S.speed===0?'停止':'×'+S.speed;$('news').textContent=S.news;let a=S.tracks.length>0,b=S.stations.length>=2,d=S.lines.length>0,e=S.trains.length>0;$('steps').innerHTML=[['1','線路を敷く','街の建物を避けながら自由にルートをつくる',a],['2','駅を建設','線路上に2駅以上を置く',b],['3','路線を開業','駅間の営業運転を設定',d],['4','列車を走らせる','列車を購入し、街を成長させる',e]].map(x=>`<div class="step ${x[3]?'done':''}"><div class="num">${x[3]?'✓':x[0]}</div><div><b>${x[1]}</b><span>${x[2]}</span></div></div>`).join('');$('info').innerHTML=S.mode==='track'?`仮線路 ${S.draft.length}点<br>概算建設費 ${(trackCost(S.draft)/1e8).toFixed(1)}億円`:'線路の近くをタップして駅を置きます。';$('lineList').innerHTML=S.lines.map(l=>`<div class="lineCard"><b style="color:${l.color}">${l.name}</b><span>${l.stationIds.length}駅｜${S.trains.filter(x=>x.lineId===l.id).length}編成</span></div>`).join('');draw()}
 function frame(now){let dt=Math.min(.05,(now-last)/1000);last=now;for(const tr of S.trains){tr.t+=dt*.06*S.speed*tr.dir;if(tr.t>=1){tr.t=1;tr.dir=-1}else if(tr.t<=0){tr.t=0;tr.dir=1}}if(S.speed){simAcc+=dt*S.speed;while(simAcc>=1.25){simAcc-=1.25;simHour()}}autoAcc+=dt;if(autoAcc>5){autoAcc=0;save()}draw();requestAnimationFrame(frame)}
 initLots();recalcAccess();render();requestAnimationFrame(frame);
 })();
