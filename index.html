@@ -12,6 +12,93 @@
 .side{display:flex;flex-direction:column;gap:7px}.card{padding:10px}.card h3{margin:0 0 7px;font-size:14px}.muted{font-size:12px;line-height:1.5;color:var(--muted)}.visual{padding:0;overflow:hidden}.visual img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}.visual .cap{padding:9px}.step{display:flex;gap:8px;align-items:flex-start;margin:6px 0;padding:7px;border-radius:9px;background:rgba(255,255,255,.035)}.num{width:25px;height:25px;display:grid;place-items:center;flex:0 0 auto;border-radius:50%;background:#1d5277;border:1px solid #4b9fd2;font-weight:900;font-size:12px}.step.done .num{background:#176641;border-color:#4fc889}.step b{font-size:12px}.step span{display:block;font-size:11px;color:var(--muted);line-height:1.4}.news{padding:10px;border-radius:10px;background:linear-gradient(135deg,rgba(73,183,255,.13),rgba(255,128,177,.08));border:1px solid rgba(86,178,238,.28);font-size:12px;line-height:1.55}.lineCard{padding:8px;border-radius:10px;background:rgba(255,255,255,.035);margin-top:6px}.lineCard b{font-size:12px}.lineCard span{display:block;font-size:11px;color:var(--muted)}
 .event{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,8,14,.74)}.event.open{display:flex}.eventCard{width:min(720px,100%);background:#102538;border:1px solid #4f718a;border-radius:20px;overflow:hidden;box-shadow:0 25px 100px #000}.eventCard img{display:block;width:100%;max-height:390px;object-fit:cover}.eventBody{padding:14px}.eventBody h2{margin:0 0 7px}.eventBody p{color:#c8d9e6;line-height:1.6}.eventBody button{width:100%;min-height:48px;border:0;border-radius:11px;background:#218fe9;font-weight:900}
 @media(max-width:920px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.visual{grid-row:1/span 2}.top{grid-template-columns:repeat(3,1fr)}}@media(max-width:640px){#game{padding:4px 4px 18px}.top{grid-template-columns:repeat(2,1fr)}.side{grid-template-columns:1fr}.toolbar{grid-template-columns:repeat(4,1fr)}.toolbar button{font-size:10px;min-height:51px}.toolbar button span{font-size:18px}.visual{grid-row:auto}.legend{display:none}.mapTitle{font-size:10px}.mapTitle b{font-size:12px}}
+
+/* v9: smartphone fullscreen simulator */
+@media(max-width:640px){
+  html,body{width:100%;height:100%;overflow:hidden;background:#07111b}
+  #game{
+    width:100vw;max-width:none;height:100dvh;min-height:100dvh;
+    margin:0;padding:0;overflow:hidden;background:#07111b
+  }
+  .top{
+    position:absolute;z-index:10;
+    top:max(4px,env(safe-area-inset-top));left:4px;right:4px;
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:3px;margin:0;pointer-events:none
+  }
+  .top .stat:nth-child(5){display:none}
+  .stat{
+    padding:5px 6px;border-radius:9px;
+    background:rgba(7,22,35,.73);
+    border-color:rgba(113,166,205,.5);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+  }
+  .stat small{font-size:8px}
+  .stat b{font-size:11px}
+  .stat .delta{display:none}
+  .layout{display:block;height:100%;min-height:0}
+  .main{
+    display:flex;flex-direction:column;
+    height:100%;min-height:0;border:0;border-radius:0
+  }
+  .mapWrap{
+    position:relative;flex:1 1 auto;min-height:0;
+    overflow:hidden;border:0
+  }
+  canvas#world{
+    position:absolute;top:0;left:50%;
+    height:100%;width:auto;max-width:none;
+    transform:translateX(-50%);
+    touch-action:none
+  }
+  .mapTitle{
+    top:max(66px,calc(env(safe-area-inset-top) + 58px));
+    left:7px;max-width:72%;padding:6px 8px;
+    font-size:9px;border-radius:8px
+  }
+  .mapTitle b{font-size:11px}
+  .legend{display:none!important}
+  .toolbar{
+    flex:0 0 auto;display:flex;flex-wrap:nowrap;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+    gap:4px;padding:5px 5px 4px;
+    scrollbar-width:none
+  }
+  .toolbar::-webkit-scrollbar,.subbar::-webkit-scrollbar{display:none}
+  .toolbar button{
+    flex:0 0 86px;min-height:47px;
+    padding:4px 5px;font-size:9px;border-radius:9px
+  }
+  .toolbar button span{font-size:17px;margin-bottom:1px}
+  .subbar{
+    flex:0 0 auto;display:flex;flex-wrap:nowrap;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+    gap:4px;padding:4px 5px max(5px,env(safe-area-inset-bottom));
+    scrollbar-width:none
+  }
+  .subbar button{
+    flex:0 0 auto;min-height:36px;
+    padding:5px 9px;font-size:10px;white-space:nowrap
+  }
+  .side{display:none!important}
+}
+@media(max-width:920px) and (orientation:landscape){
+  #game{width:100vw;max-width:none;height:100dvh;margin:0;padding:0;overflow:hidden}
+  .top{position:absolute;z-index:10;top:4px;left:4px;right:4px;grid-template-columns:repeat(5,1fr);gap:3px;margin:0;pointer-events:none}
+  .stat{padding:4px 6px;background:rgba(7,22,35,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .stat small{font-size:8px}.stat b{font-size:11px}.stat .delta{display:none}
+  .layout{display:block;height:100%}
+  .main{display:flex;flex-direction:column;height:100%;border:0;border-radius:0}
+  .mapWrap{flex:1;min-height:0;overflow:hidden}
+  canvas#world{position:absolute;top:0;left:50%;height:100%;width:auto;max-width:none;transform:translateX(-50%)}
+  .toolbar{display:flex;flex-wrap:nowrap;overflow-x:auto;padding:4px;gap:4px}
+  .toolbar button{flex:0 0 82px;min-height:42px;font-size:9px;padding:3px}
+  .subbar{display:flex;flex-wrap:nowrap;overflow-x:auto;padding:4px;gap:4px}
+  .subbar button{flex:0 0 auto;min-height:34px;font-size:9px;padding:4px 8px;white-space:nowrap}
+  .side,.legend{display:none!important}
+  .mapTitle{top:48px}
+}
+
 </style>
 </head>
 <body>
@@ -20,7 +107,7 @@
 <div class="top"><div class="stat"><small>会社資金</small><b id="cash">180.0億円</b><span class="delta">建設と経営</span></div><div class="stat"><small>都市人口</small><b id="pop">0人</b><span class="delta" id="growth">+0 / 日</span></div><div class="stat"><small>鉄道収入</small><b id="rev">0万円</b><span class="delta" id="pax">0人 輸送</span></div><div class="stat"><small>日時</small><b id="time">Day 1 07:00</b><span class="delta" id="daypart">朝</span></div><div class="stat"><small>速度</small><b id="speed">×1</b><span class="delta">2.5D都市</span></div></div>
 <div class="layout"><section class="main"><div class="mapWrap"><canvas id="world" width="1080" height="720"></canvas><div class="mapTitle"><b id="modeTitle">線路建設</b><span id="modeHelp">街の地面をタップして線路のルートを決めます。</span></div><div class="legend">道路・建物・公園・線路・駅・列車はすべて別オブジェクト</div></div>
 <div class="toolbar"><button class="gold active" data-mode="track"><span>🛤️</span>線路建設</button><button data-mode="station"><span>🚉</span>駅建設</button><button data-action="line"><span>🗺️</span>路線開業</button><button class="green" data-action="train"><span>🚆</span>列車購入</button><button data-speed="0"><span>⏸</span>停止</button><button data-speed="1"><span>▶</span>×1</button><button data-speed="2"><span>⏩</span>×2</button><button data-speed="4"><span>⏩</span>×4</button></div>
-<div class="subbar"><button class="action" id="confirmTrack">線路を確定</button><button id="undoPoint">1点戻す</button><button id="cancelDraft">キャンセル</button><button id="zoomIn">＋拡大</button><button id="zoomOut">－縮小</button><button id="saveBtn">保存</button><button id="resetBtn">最初から</button></div></section>
+<div class="subbar"><button class="action" id="confirmTrack">線路を確定</button><button id="undoPoint">1点戻す</button><button id="cancelDraft">キャンセル</button><button id="zoomIn">＋拡大</button><button id="zoomOut">－縮小</button><button id="fullscreenBtn">⛶ 全画面</button><button id="saveBtn">保存</button><button id="resetBtn">最初から</button></div></section>
 <aside class="side"><section class="card visual"><img id="visualImage" alt="企画ボード"><div class="cap"><h3>企画ボードの世界観をゲームへ</h3><div class="muted">画像は演出用。実際のプレイ画面は固定画像ではなく、都市を毎フレーム描画しています。</div></div></section><section class="card"><h3>プレイ手順</h3><div id="steps"></div></section><section class="card"><h3>選択・路線情報</h3><div id="info" class="muted"></div><div id="lineList"></div></section><section class="card"><h3>都市ニュース</h3><div class="news" id="news">最初の線路を計画してください。</div></section></aside></div>
 </main>
 <section class="event" id="event"><div class="eventCard"><img id="eventImg" alt=""><div class="eventBody"><h2 id="eventTitle"></h2><p id="eventText"></p><button id="eventClose">街へ戻る</button></div></div></section>
@@ -66,7 +153,7 @@ function growCity(){let before=totals().p;for(const z of S.lots){if(z.road||z.wa
 function simHour(){S.hour++;if(S.hour>=24){S.hour=0;S.day++;growCity()}let rush=(S.hour>=7&&S.hour<10)||(S.hour>=17&&S.hour<20);for(const tr of S.trains){let line=S.lines.find(l=>l.id===tr.lineId);if(!line)continue;let riders=Math.min(tr.cap,Math.round((rush?430:180)*(1+line.stationIds.length*.12)));tr.pax=riders;S.totalPax+=riders;let fare=riders*290;S.revenue+=fare;S.cash+=fare;for(const sid of line.stationIds){let s=S.stations.find(x=>x.id===sid);if(s){s.pax+=Math.round(riders/line.stationIds.length);s.sales+=Math.round(fare/line.stationIds.length)}}}save()}
 function daypart(){return S.hour<5?'深夜':S.hour<10?'朝':S.hour<17?'昼':S.hour<20?'夕方':'夜'}
 function setMode(m){S.mode=m;document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));if(m==='track'){$('modeTitle').textContent='線路建設';$('modeHelp').textContent='街の地面をタップしてルートを作り、「線路を確定」。'}else{$('modeTitle').textContent='駅建設';$('modeHelp').textContent='完成した線路の近くをタップして駅を建設。'}render()}
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));document.querySelector('[data-action="line"]').onclick=openLine;document.querySelector('[data-action="train"]').onclick=buyTrain;document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{S.speed=+b.dataset.speed;render()});$('confirmTrack').onclick=confirmTrack;$('undoPoint').onclick=()=>{S.draft.pop();render()};$('cancelDraft').onclick=()=>{S.draft=[];render()};$('zoomIn').onclick=()=>{S.zoom=Math.min(1.35,S.zoom+.1);render()};$('zoomOut').onclick=()=>{S.zoom=Math.max(.72,S.zoom-.1);render()};$('saveBtn').onclick=()=>{save();notify('保存しました。')};$('resetBtn').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));document.querySelector('[data-action="line"]').onclick=openLine;document.querySelector('[data-action="train"]').onclick=buyTrain;document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{S.speed=+b.dataset.speed;render()});$('fullscreenBtn').onclick=async()=>{try{let target=$('game');if(target.requestFullscreen){await target.requestFullscreen();}else if(target.webkitRequestFullscreen){target.webkitRequestFullscreen();}notify('全画面表示にしました。');}catch(e){notify('Safariではこのまま画面いっぱいで表示します。さらに広くする場合は「共有」→「ホーム画面に追加」を使えます。');}};$('confirmTrack').onclick=confirmTrack;$('undoPoint').onclick=()=>{S.draft.pop();render()};$('cancelDraft').onclick=()=>{S.draft=[];render()};$('zoomIn').onclick=()=>{S.zoom=Math.min(1.35,S.zoom+.1);render()};$('zoomOut').onclick=()=>{S.zoom=Math.max(.72,S.zoom-.1);render()};$('saveBtn').onclick=()=>{save();notify('保存しました。')};$('resetBtn').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};
 c.addEventListener('pointerup',e=>{let p=screenToWorld(e);if(S.mode==='track'){if(S.draft.length&&dist(S.draft[S.draft.length-1],p)<.5)return;S.draft.push({x:Math.round(p.x*2)/2,y:Math.round(p.y*2)/2});render()}else if(S.mode==='station')placeStation(p)});
 function poly(points,fill,stroke){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}}
 function diamond(x,y,fill){let p=worldToScreen(x+.5,y+.5),w=TW*.5*S.zoom,h=TH*.5*S.zoom;poly([{x:p.x,y:p.y-h},{x:p.x+w,y:p.y},{x:p.x,y:p.y+h},{x:p.x-w,y:p.y}],fill,null)}
