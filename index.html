@@ -621,7 +621,7 @@ select,input{
 .tutorialHero{position:relative;flex:1 1 47%;min-height:255px;overflow:hidden;background:#07375c}
 .tutorialHero:after{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(1,22,39,.20),rgba(3,24,42,.03) 48%,rgba(2,18,33,.28)),linear-gradient(180deg,rgba(0,0,0,0) 62%,rgba(3,25,44,.52))}
 .tutorialSceneImg{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;object-position:center;background:#07375c}
-.tutorialGuideArt{position:absolute;z-index:3;left:1.5%;bottom:0;height:98%;width:auto;max-width:45%;object-fit:contain;object-position:left bottom;display:block;filter:drop-shadow(16px 10px 22px rgba(0,0,0,.28))}
+.tutorialGuideArt{position:absolute;z-index:3;left:1%;bottom:-1%;height:100%;width:auto;max-width:48%;object-fit:contain;object-position:left bottom;display:block;filter:drop-shadow(16px 10px 22px rgba(0,0,0,.28))}
 .tutorialSpeech{position:absolute;z-index:4;right:4%;bottom:10%;width:min(49%,440px);padding:17px 20px;border-radius:20px;background:#fff;color:#08365f;font-size:clamp(15px,2vw,24px);font-weight:1000;line-height:1.38;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .tutorialSpeech:before{content:"";position:absolute;left:-24px;bottom:31%;border:15px solid transparent;border-right:20px solid #fff}
 .tutorialHeroBadge{position:absolute;z-index:4;right:4%;top:6%;display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:999px;background:rgba(4,38,66,.88);border:1px solid rgba(120,210,255,.6);font-size:9px;font-weight:950}.tutorialHeroBadge i{font-style:normal;font-size:17px}
@@ -881,6 +881,7 @@ const ASSETS={"hero": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA
 const $=id=>document.getElementById(id),c=$('world'),ctx=c.getContext('2d');
 /* Asset Pack 1: dedicated game sprites */
 const RAIL_ART={};
+/* v36: Asset Pack 2 — richer city, express trains, vegetation and guide art */
 const RAIL_ART_SRC={
   trainFront:'assets/train-front.svg',
   trainMid:'assets/train-mid.svg',
@@ -889,18 +890,20 @@ const RAIL_ART_SRC={
   station2:'assets/station-lv2.svg',
   station3:'assets/station-lv3.svg',
   res:'assets/res-house.svg',
-  com:'assets/commercial.svg',
-  off:'assets/office.svg',
-  guide:'assets/guide.svg',
   resMid:'assets/res-mid.svg',
-  resHigh:'assets/res-high.svg',
-  comLarge:'assets/commercial-large.svg',
-  offHigh:'assets/office-high.svg',
-  tree:'assets/tree.svg',
-  sakura:'assets/sakura.svg',
-  expressFront:'assets/express-front.svg',
-  expressMid:'assets/express-mid.svg',
-  expressRear:'assets/express-rear.svg'
+  resHigh:'assets/res-highrise.svg',
+  com:'assets/commercial.svg',
+  comLarge:'assets/commercial-tower.svg',
+  off:'assets/office.svg',
+  offHigh:'assets/office-highrise.svg',
+  tree:'assets/tree-green.svg',
+  sakura:'assets/tree-sakura.svg',
+  expressFront:'assets/train-express-front.svg',
+  expressMid:'assets/train-express-mid.svg',
+  expressRear:'assets/train-express-rear.svg',
+  streetlight:'assets/streetlight.svg',
+  busStop:'assets/bus-stop.svg',
+  guide:'assets/tutorial-guide.svg'
 };
 for(const [k,src] of Object.entries(RAIL_ART_SRC)){
   const im=new Image();RAIL_ART[k]=im;im.decoding='async';
@@ -959,7 +962,7 @@ $('titleSettings').onclick=()=>showTitleMini('設定','画面の拡大・縮小�
 $('titleData').onclick=()=>showTitleMini('セーブデータ',localStorage.getItem(SAVE)?'このブラウザに続きから遊べるセーブデータがあります。ゲーム中は自動保存され、保存ボタンでも記録できます。':'まだセーブデータはありません。新しく始めるとこのブラウザに保存されます。');
 $('titleMiniClose').onclick=()=>$('titleMiniPanel').classList.remove('open');
 /* v34.5 premium interactive tutorial */
-const TUTORIAL_GUIDE_IMAGE='assets/guide.svg';
+const TUTORIAL_GUIDE_IMAGE='assets/tutorial-guide.svg';
 const TUTORIAL_STEPS=[
   {
     icon:'🛤️',title:'線路をつくりましょう',eyebrow:'チュートリアル 1/5',
@@ -1301,6 +1304,22 @@ function season(){let d=((S.day-1)%48+48)%48;return d<12?'spring':d<24?'summer':
 function seasonLabel(){let q=season();return q==='spring'?'🌸 春':q==='summer'?'☀️ 夏':q==='autumn'?'🍁 秋':'❄️ 冬'}
 function drawCrane(z){if(!(z.buildFx>0))return;let p=worldToScreen(z.x+.5,z.y+.5),s=S.zoom,h=28*s;ctx.save();ctx.strokeStyle='#f1bd42';ctx.lineWidth=2*s;ctx.beginPath();ctx.moveTo(p.x+10*s,p.y);ctx.lineTo(p.x+10*s,p.y-h);ctx.lineTo(p.x+28*s,p.y-h);ctx.stroke();ctx.strokeStyle='#795a1f';ctx.lineWidth=1*s;ctx.beginPath();ctx.moveTo(p.x+17*s,p.y-h);ctx.lineTo(p.x+17*s,p.y-h+8*s);ctx.stroke();ctx.restore()}
 function drawRoadTraffic(){let density=Math.min(14,3+S.stations.length+Math.floor(totals().p/10000)),part=daypart();for(let i=0;i<density;i++){let horiz=i%2===0,row=(i*5)%GH,col=(i*7)%GW,f=(visualClock*(.28+.03*(i%4))+i*.173)%1,x=horiz?f*(GW-1):col,y=horiz?row:f*(GH-1);if(horiz&&!isRoad(0,row))continue;if(!horiz&&!isRoad(col,0))continue;let p=worldToScreen(x+.5,y+.5),s=S.zoom;ctx.save();ctx.translate(p.x,p.y-2*s);ctx.fillStyle=i%3===0?'#e75858':i%3===1?'#f0c547':'#e9f1f5';ctx.fillRect(-3*s,-1.5*s,6*s,3*s);if(part==='夜'||part==='深夜'){ctx.fillStyle='#ffe9a8';ctx.fillRect((horiz?3:-3)*s,-1*s,1.5*s,1.5*s)}ctx.restore()}}
+function drawRoadFurniture(){
+  let sc=S.zoom,night=daypart()==='夜'||daypart()==='深夜';
+  for(let y=0;y<GH;y+=5)for(let x=0;x<GW;x+=5){
+    if(!isRoad(x,y))continue;
+    let p=worldToScreen(x+.5,y+.5);
+    if(artReady('streetlight')){
+      let im=RAIL_ART.streetlight,h=28*sc,w=h*(im.naturalWidth/im.naturalHeight);
+      ctx.save();ctx.globalAlpha=night?1:.92;ctx.drawImage(im,p.x-15*sc-w/2,p.y-h+2*sc,w,h);
+      if(night){ctx.globalCompositeOperation='screen';ctx.fillStyle='rgba(255,225,150,.18)';ctx.beginPath();ctx.ellipse(p.x-15*sc,p.y-18*sc,12*sc,5.5*sc,0,0,Math.PI*2);ctx.fill()}ctx.restore()
+    }
+  }
+  for(let y=2;y<GH;y+=5){
+    let x=5;if(!isRoad(x,y))continue;let p=worldToScreen(x+.5,y+.5);
+    if(artReady('busStop')){let im=RAIL_ART.busStop,h=30*sc,w=h*(im.naturalWidth/im.naturalHeight);ctx.drawImage(im,p.x+7*sc,p.y-h+5*sc,w,h)}
+  }
+}
 function drawWaterShimmer(){ctx.save();ctx.strokeStyle='rgba(210,245,255,.28)';ctx.lineWidth=1;for(let y=3;y<16;y+=2){let a=worldToScreen(10.3,y+.3),b=worldToScreen(11.7,y+.3);let w=Math.sin(visualClock*1.8+y)*3*S.zoom;ctx.beginPath();ctx.moveTo(a.x+w,a.y);ctx.lineTo(b.x+w,b.y);ctx.stroke()}ctx.restore()}
 /* v29: concept-board 2.5D graphic foundation */
 function building(z){
@@ -1480,7 +1499,7 @@ function draw(){
     if(z.road){drawRoadTile(z);continue}
     drawGroundTile(z);if(z.type==='park'||z.type==='empty'){if(rand(x,y,4)<.62)tree(z)}else building(z)
   }
-  drawWaterShimmer();drawRoadTraffic();for(const s of S.stations)drawStationPlaza(s);
+  drawWaterShimmer();drawRoadTraffic();drawRoadFurniture();for(const s of S.stations)drawStationPlaza(s);
   if(S.mode==='analysis')drawAnalysisOverlay();
   for(const t of S.tracks)drawTrack(t,false);
   if(S.draft.length>=2){let pa=buildAssessment();drawTrack({points:pa.points,structure:S.buildStructure,doubleTrack:S.buildDouble,invalid:!pa.valid},true)}
