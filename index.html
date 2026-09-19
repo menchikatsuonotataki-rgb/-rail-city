@@ -908,6 +908,10 @@ select,input{
 }
 
 
+/* v43.1: never show construction float on the title screen */
+#title:not([style*="display: none"]) ~ #trackCommitFloat,
+body:has(#title:not([style*="display: none"])) #trackCommitFloat{display:none!important}
+
 /* v43: partner railway and through service */
 .v43Overlay{position:fixed;inset:0;z-index:45;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(2,8,14,.76);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .v43Overlay.open{display:flex}.v43Panel{width:min(920px,100%);max-height:min(88dvh,820px);overflow:auto;border:1px solid #547995;border-radius:20px;background:linear-gradient(180deg,#10283c,#091927);box-shadow:0 26px 100px rgba(0,0,0,.56)}
@@ -2055,7 +2059,10 @@ if($('connectionHint')){let cp=currentBuildPoints(),ci=connectionInfoForPoints(c
 let ba=buildAssessment();if($('buildCost'))$('buildCost').textContent=formatBuildYen(ba.total);if($('buildDistance'))$('buildDistance').textContent=trackDistanceText(ba.points);if($('buildDemolition'))$('buildDemolition').textContent=formatBuildYen(ba.demolition);if($('buildStatus')){let ci=connectionInfoForPoints(ba.points),conn=ci.start||ci.end;$('buildStatus').textContent=ba.valid?(conn?(conn.kind==='middle'?'分岐接続可能':'既存線へ延伸可能'):(S.buildStructure==='ground'?(ba.demolition?'建設可・立退あり':'建設可能'):(S.buildStructure==='elevated'?'建設可能・高架':'建設可能・地下'))):(ba.invalidReason||'建設不可');$('buildStatus').className='buildStatus '+(ba.valid?(ba.demolition?'warn':'good'):'bad')}if($('buildNow')){let bn=$('buildNow');bn.disabled=!ba.valid||S.cash<ba.total;bn.textContent=ba.valid?(S.cash<ba.total?'資金不足':'線路を敷設する'):'ルートを指定してください'}
 if($('trackCommitFloat')){
   let tc=$('trackCommitFloat'),tb=$('trackCommitBtn'),tm=$('trackCommitMeta'),tl=$('trackCommitLabel');
-  let show=S.mode==='track';
+  let gameEl=$('game'),titleEl=$('title');
+  let gameVisible=!!gameEl&&getComputedStyle(gameEl).display!=='none';
+  let titleHidden=!!titleEl&&getComputedStyle(titleEl).display==='none';
+  let show=S.mode==='track'&&gameVisible&&titleHidden;
   tc.classList.toggle('show',show);
   if(show){
     tb.disabled=!ba.valid||S.cash<ba.total;
