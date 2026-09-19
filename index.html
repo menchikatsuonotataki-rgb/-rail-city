@@ -519,6 +519,86 @@
   .titleMainActions button{min-height:48px}.titleAuxActions button{min-height:39px}
 }
 
+
+/* v33: unified concept-board UI skin */
+:root{
+  --rc-navy:#061b2d;--rc-panel:#0a2941;--rc-panel2:#0d3552;--rc-line:#315e7a;
+  --rc-blue:#1aa9eb;--rc-blue2:#0879bd;--rc-text:#f5fbff;--rc-muted:#a9c5d7;--rc-green:#22bf78;--rc-gold:#efbd4f
+}
+body{background:#061522;color:var(--rc-text)}
+#game{background:linear-gradient(180deg,#071d30,#061522)}
+.top{
+  gap:7px;padding:7px 8px;background:linear-gradient(180deg,#082942,#061d31);
+  border-bottom:1px solid #315b77;box-shadow:0 5px 18px rgba(0,0,0,.24)
+}
+.stat{
+  min-width:0;border:1px solid rgba(91,153,190,.32);border-radius:10px;
+  background:linear-gradient(180deg,rgba(18,62,91,.78),rgba(8,35,56,.86));padding:6px 8px
+}
+.stat small{color:#a7c8da;font-weight:800}.stat b{color:#fff}.stat .delta{color:#74cfff}
+.mapWrap{border-color:#2c5874;background:#071a29;box-shadow:inset 0 0 0 1px rgba(129,205,242,.07)}
+.mapTitle{
+  background:linear-gradient(90deg,rgba(4,24,40,.96),rgba(10,51,78,.84));
+  border:1px solid rgba(104,184,225,.36);border-radius:11px;box-shadow:0 8px 20px rgba(0,0,0,.26)
+}
+.mapTitle b{letter-spacing:.04em}.mapTitle span{color:#b7d0df}
+.legend{background:rgba(5,24,39,.76)!important;border-color:rgba(109,180,216,.28)!important;color:#b9d1df!important}
+.toolbar{
+  background:linear-gradient(180deg,#082840,#061a2b);border-top:1px solid #315a75;
+  box-shadow:0 -8px 24px rgba(0,0,0,.20);gap:5px;padding:6px
+}
+.toolbar button,.subbar button,.buildToolRail button,.stationToolRail button,.shapeRail button,
+.routeColorRail button,.serviceRail button,.headwayBtns button,.trainTypes button,.analysisTabs button,
+.manageTabs button,.infraActions button{
+  border:1px solid #315a76;background:linear-gradient(180deg,#123f5e,#0a2d47);color:#f5fbff;
+  border-radius:9px;font-weight:900;box-shadow:inset 0 1px rgba(255,255,255,.04)
+}
+.toolbar button:hover,.subbar button:hover{background:linear-gradient(180deg,#185276,#0e3a59)}
+.toolbar button.active,.toolbar button.green,.subbar .action,.buildNow,.stationBuildNow,.routeOpen{
+  background:linear-gradient(180deg,#18a9e9,#087abd)!important;border-color:#54caff!important;color:#fff!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.18),0 5px 13px rgba(0,110,180,.18)
+}
+.toolbar button.gold{background:linear-gradient(180deg,#826523,#594518);border-color:#aa8633}
+.toolbar button.green{background:linear-gradient(180deg,#24b879,#148253)!important;border-color:#4bd59b!important}
+.subbar{
+  background:#061a2b;border-top:1px solid rgba(70,117,145,.46);gap:5px;padding:6px
+}
+.side{background:linear-gradient(180deg,#071c2e,#061522)}
+.card,.timetableSheet,.analysisSheet,.companySheet,.missionsSheet,.railOpsPanel,.managePanel{
+  background:linear-gradient(180deg,rgba(11,44,68,.97),rgba(6,27,45,.98))!important;
+  border:1px solid #2e5872!important;border-radius:14px!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.25)
+}
+.card h3,.ttHead h3,.analysisHead h3,.companyHead h3,.missionsHead h3,.infraHead h3,.manageHead h3{color:#fff;letter-spacing:.03em}
+.muted,.meta,.infraNote{color:#a9c2d2!important}
+.lineCard,.manageCard,.missionCard,.ttBox,.infraStats>div,.companyStats>div{
+  background:linear-gradient(180deg,rgba(16,56,84,.78),rgba(8,35,55,.82))!important;
+  border-color:rgba(75,127,158,.43)!important
+}
+.constructionHud,.stationHud,.routeHud,.timetableHud,.analysisHud,.companyHud,.missionsHud,.railOpsHud,.manageHud{
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)
+}
+.buildToolRail,.stationToolRail,.shapeRail,.routeColorRail,.serviceRail,.buildConfirmBar,.stationConfirmBar,.routeConfirmBar{
+  background:linear-gradient(180deg,rgba(6,34,54,.96),rgba(5,25,42,.97))!important;
+  border-color:#315b76!important;box-shadow:0 8px 25px rgba(0,0,0,.24)
+}
+.buildStats small,.stationStats small,.routeStats small{color:#9fbfd2!important}
+.buildStats b,.stationStats b,.routeStats b{color:#fff}
+select,input{
+  background:#092941!important;color:#f5fbff!important;border:1px solid #35607b!important;border-radius:8px!important
+}
+.capacityBar{background:#17354a!important}.capacityBar i{background:linear-gradient(90deg,#1aa9eb,#4edaa1)!important}
+.news{background:linear-gradient(180deg,#0d3653,#09283f)!important;border-color:#315b76!important}
+.step{border-color:rgba(66,113,141,.42)!important;background:rgba(11,45,68,.55)!important}
+.step.done{background:rgba(20,105,75,.24)!important;border-color:rgba(63,184,126,.45)!important}
+.event{background:rgba(1,10,20,.76);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.eventCard{background:#071f33!important;border:1px solid #3a6782!important;border-radius:20px!important;overflow:hidden}
+.eventBody button,.sheetClose{background:linear-gradient(180deg,#178fcb,#096da8)!important;border:1px solid #51bce9!important;color:#fff!important}
+@media(max-width:640px){
+  .top{gap:3px;padding:4px}.stat{padding:4px 5px;border-radius:7px}.toolbar{gap:3px;padding:4px}.toolbar button{border-radius:7px}
+  .subbar{padding:4px;gap:3px}.card,.timetableSheet,.analysisSheet,.companySheet,.missionsSheet,.railOpsPanel,.managePanel{border-radius:11px!important}
+}
+
 </style>
 </head>
 <body>
