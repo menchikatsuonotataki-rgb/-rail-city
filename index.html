@@ -907,6 +907,30 @@ select,input{
   }
 }
 
+
+/* v43: partner railway and through service */
+.v43Overlay{position:fixed;inset:0;z-index:45;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(2,8,14,.76);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.v43Overlay.open{display:flex}.v43Panel{width:min(920px,100%);max-height:min(88dvh,820px);overflow:auto;border:1px solid #547995;border-radius:20px;background:linear-gradient(180deg,#10283c,#091927);box-shadow:0 26px 100px rgba(0,0,0,.56)}
+.v43Head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:rgba(10,27,42,.96);border-bottom:1px solid #35566f;backdrop-filter:blur(10px)}
+.v43Head h2{margin:0;font-size:18px}.v43Head h2 small{display:block;margin-top:3px;color:#9fb8ca;font-size:10px;font-weight:700;letter-spacing:.08em}
+.v43Close{min-width:42px;height:38px;border-radius:10px;border:1px solid #47667c;background:#152f45;font-weight:900}
+.v43Intro{padding:12px 16px 4px;color:#c8d9e6;font-size:12px;line-height:1.65}.v43Intro b{color:#fff}
+.v43Summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 16px}
+.v43Metric{padding:10px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(119,174,213,.22)}.v43Metric small{display:block;color:#9eb5c6;font-size:9px}.v43Metric b{display:block;margin-top:3px;font-size:15px}
+.v43Grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:8px 16px 16px}
+.v43Card{position:relative;overflow:hidden;padding:13px;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid rgba(116,166,202,.27)}
+.v43Card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--v43c,#5ec8ff)}.v43Card.locked{opacity:.62}
+.v43Partner{display:flex;align-items:center;gap:9px;margin-bottom:8px}.v43Logo{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:var(--v43c,#5ec8ff);color:#06131e;font-weight:1000;font-size:16px}
+.v43Partner b{display:block;font-size:13px}.v43Partner span{display:block;color:#a9c0d0;font-size:10px;margin-top:2px}.v43Desc{min-height:47px;color:#c3d4e0;font-size:11px;line-height:1.5}
+.v43TagRow{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.v43Tag{padding:4px 6px;border-radius:999px;background:#102f46;border:1px solid #315b79;color:#cce5f5;font-size:9px;font-weight:800}
+.v43Field{margin-top:8px}.v43Field label{display:block;margin-bottom:4px;color:#9fb8c9;font-size:9px}.v43Field select{width:100%;min-height:38px;padding:0 8px;border-radius:9px;border:1px solid #41627a;background:#0d2233;color:#f5f9fc}
+.v43Action{width:100%;min-height:42px;margin-top:9px;border-radius:10px;border:1px solid #5ad4a1;background:linear-gradient(180deg,#1dac70,#128050);font-weight:950}.v43Action.secondary{border-color:#4f7792;background:#16344b}.v43Action.danger{border-color:#a75c66;background:#4b232a}.v43Action:disabled{opacity:.42}
+.v43Connected{margin-top:8px;padding:7px 8px;border-radius:9px;background:rgba(64,210,157,.10);border:1px solid rgba(89,220,168,.3);font-size:10px;line-height:1.45}
+.v43Empty{grid-column:1/-1;padding:16px;border:1px dashed #4d718a;border-radius:13px;color:#bdd0dd;text-align:center;font-size:12px;line-height:1.7}
+.v43ThroughBadge{display:inline-block!important;margin-top:5px;padding:3px 6px;border-radius:999px;background:rgba(77,210,166,.13);border:1px solid rgba(87,220,175,.36);color:#74ebbc!important;font-size:9px!important;font-weight:900}
+#v43ThroughBtn.v43Active{background:linear-gradient(180deg,#275d54,#183b37);border-color:#61dbb1}
+@media(max-width:760px){.v43Overlay{padding:7px}.v43Panel{max-height:94dvh;border-radius:15px}.v43Grid{grid-template-columns:1fr;padding:7px 10px 12px}.v43Summary{grid-template-columns:1fr 1fr 1fr;padding:8px 10px}.v43Intro{padding:10px}.v43Head{padding:11px}.v43Card{padding:11px}.v43Desc{min-height:0}}
+
 </style>
 </head>
 <body>
@@ -2070,6 +2094,200 @@ if(tq){$('firstHour').value=String(tq.firstHour);$('lastHour').value=String(tq.l
 let sc=S.stationCandidate;if($('candidateName'))$('candidateName').textContent=sc?sc.name:'候補なし';if($('candidatePopulation'))$('candidatePopulation').textContent=sc?sc.population.toLocaleString()+'人':'0人';if($('candidateUsers'))$('candidateUsers').textContent=sc?sc.users.toLocaleString()+'人/日':'0人/日';if($('candidateCost'))$('candidateCost').textContent=sc?(sc.cost/1e8).toFixed(1)+'億円':'12.0億円';if($('stationBuildNow'))$('stationBuildNow').disabled=!sc||!sc.valid||sc.cost>S.cash;document.querySelectorAll('[data-trackshape]').forEach(x=>x.classList.toggle('active',x.dataset.trackshape===S.trackShape));$('cash').textContent=(S.cash/1e8).toFixed(1)+'億円';$('pop').textContent=t.p.toLocaleString()+'人';$('growth').textContent=(t.p-S.lastPop>=0?'+':'')+(t.p-S.lastPop).toLocaleString()+' / 日';$('rev').textContent=Math.round(S.revenue/1e4).toLocaleString()+'万円';$('pax').textContent=S.totalPax.toLocaleString()+'人 輸送';$('time').textContent='Day '+S.day+' '+String(S.hour).padStart(2,'0')+':00';$('daypart').textContent=daypart();$('speed').textContent=S.speed===0?'停止':'×'+S.speed;$('news').textContent=S.news;let a=S.tracks.length>0,b=S.stations.length>=2,d=S.lines.length>0,e=S.trains.length>0;$('steps').innerHTML=[['1','線路を敷く','街に鉄道の軸をつくる',a],['2','駅を建設','駅勢圏を見ながら配置',b],['3','路線を開業','停車駅・種別・色を設定',d],['4','ダイヤ設定','列車を購入して運行',e],['5','都市分析','人口・地価・需要を確認',S.mode==='analysis'||e],['6','会社経営','収支と維持費を管理',S.financeHistory.length>0],['7','ミッション','都市目標を達成',S.completedMissions.length>0],['8','都市ランク','Bランク以上を目指す',rankAtLeast('B')],['9','大都市圏','Sランクへ成長',rankAtLeast('S')]].map(x=>`<div class="step ${x[3]?'done':''}"><div class="num">${x[3]?'✓':x[0]}</div><div><b>${x[1]}</b><span>${x[2]}</span></div></div>`).join('');$('info').innerHTML=S.mode==='track'?`仮線路 ${ba.points.length}点<br>${S.buildStructure==='ground'?'地上':S.buildStructure==='elevated'?'橋・高架':'トンネル'} ${S.buildDouble?'複線':'単線'}<br>総建設費 ${(ba.total/1e8).toFixed(1)}億円`:S.stationCandidate?`<b>${S.stationCandidate.name}</b><br>駅勢圏人口 ${S.stationCandidate.population.toLocaleString()}人<br>予想利用者 ${S.stationCandidate.users.toLocaleString()}人/日<br>${S.stationCandidate.valid?'建設可能':'駅間隔が近すぎます'}`:'線路上をタップして駅候補を置きます。';$('lineList').innerHTML=S.lines.map(l=>`<div class="lineCard"><b style="color:${l.color}">${l.name}</b><span>${l.service==='local'?'普通':l.service==='rapid'?'快速':'急行'}｜停車${serviceStops(l).length}/${l.stationIds.length}駅｜${S.trains.filter(x=>x.lineId===l.id).length}編成｜${l.headway||'-'}分間隔</span></div>`).join('');draw()}
 function frame(now){let dt=Math.min(.05,(now-last)/1000);last=now;visualClock+=dt;for(const tr of S.trains)updateTrainOperation(tr,dt);updateFollowCamera(dt);if(S.speed){simAcc+=dt*S.speed;while(simAcc>=1.25){simAcc-=1.25;simHour()}}autoAcc+=dt;if(autoAcc>5){autoAcc=0;save()}draw();requestAnimationFrame(frame)}
 initLots();recalcAccess();render();requestAnimationFrame(frame);
+
+/* v43: partner railway and through service */
+const V43_PARTNERS=[
+  {id:'toto',company:'東都電鉄',line:'東都本線',mark:'T',color:'#e866a2',fee:600000000,demand:92,rank:'E',desc:'郊外住宅地からの通勤需要が強い私鉄。最初の相互直通に向いた標準的なパートナー。'},
+  {id:'bay',company:'湾岸高速鉄道',line:'ベイライン',mark:'B',color:'#47c7d9',fee:1000000000,demand:132,rank:'C',desc:'臨海部・空港方面の需要を取り込む高速路線。昼間も安定した流動が発生する。'},
+  {id:'metro',company:'中央メトロ',line:'環状線',mark:'M',color:'#f1b642',fee:1400000000,demand:178,rank:'B',desc:'都心地下鉄ネットワークへ接続。大きな旅客流動を生む一方、接続契約費も高い。'}
+];
+function v43Partner(id){return V43_PARTNERS.find(function(x){return x.id===id})||null}
+function v43EnsureState(){
+  if(!Array.isArray(S.partnerLinks))S.partnerLinks=[];
+  if(S.v43ThroughPax==null)S.v43ThroughPax=0;
+  for(const l of S.lines){
+    if(l.throughPartnerId===undefined)l.throughPartnerId=null;
+    if(l.throughStationId===undefined)l.throughStationId=null;
+  }
+}
+function v43BoundaryStations(){
+  v43EnsureState();
+  return S.stations.filter(function(s){
+    return Math.min(s.x,s.y,GW-s.x,GH-s.y)<=3.2;
+  });
+}
+function v43LineTerminatesAt(line,stationId){
+  if(!line||!Array.isArray(line.stationIds)||line.stationIds.length<2)return false;
+  return line.stationIds[0]===stationId||line.stationIds[line.stationIds.length-1]===stationId;
+}
+function v43CompatibleLines(stationId){
+  return S.lines.filter(function(l){return v43LineTerminatesAt(l,stationId)});
+}
+function v43Link(partnerId){
+  v43EnsureState();
+  return S.partnerLinks.find(function(x){return x.partnerId===partnerId})||null;
+}
+function v43ThroughLinks(){
+  v43EnsureState();
+  return S.partnerLinks.filter(function(x){return x.lineId&&S.lines.some(function(l){return l.id===x.lineId})});
+}
+function v43RankOK(p){return p.rank==='E'||rankAtLeast(p.rank)}
+function v43Money(n){return (n/100000000).toFixed(n%100000000===0?0:1)+'億円'}
+function v43StationOptions(selected){
+  const list=v43BoundaryStations();
+  if(!list.length)return '<option value="">境界駅がありません</option>';
+  return list.map(function(s){return '<option value="'+s.id+'" '+(s.id===selected?'selected':'')+'>'+s.name+'</option>'}).join('');
+}
+function v43LineOptions(stationId,selected){
+  const list=v43CompatibleLines(stationId);
+  if(!list.length)return '<option value="">接続可能な路線なし</option>';
+  return list.map(function(l){return '<option value="'+l.id+'" '+(l.id===selected?'selected':'')+'>'+l.name+'</option>'}).join('');
+}
+function v43RenderPanel(){
+  v43EnsureState();
+  const overlay=$('v43Overlay');if(!overlay||!overlay.classList.contains('open'))return;
+  const edge=v43BoundaryStations(),active=v43ThroughLinks();
+  $('v43SignedCount').textContent=S.partnerLinks.length+'社';
+  $('v43ActiveCount').textContent=active.length+'路線';
+  $('v43PaxCount').textContent=(S.v43ThroughPax||0).toLocaleString()+'人';
+  $('v43Grid').innerHTML=V43_PARTNERS.map(function(p){
+    const link=v43Link(p.id),locked=!v43RankOK(p),station=link&&S.stations.find(function(s){return s.id===link.stationId});
+    const canSign=edge.length&&!locked&&S.cash>=p.fee;
+    let body='<div class="v43Card '+(locked?'locked':'')+'" style="--v43c:'+p.color+'">';
+    body+='<div class="v43Partner"><div class="v43Logo">'+p.mark+'</div><div><b>'+p.company+'</b><span>'+p.line+'</span></div></div>';
+    body+='<div class="v43Desc">'+p.desc+'</div>';
+    body+='<div class="v43TagRow"><span class="v43Tag">契約 '+v43Money(p.fee)+'</span><span class="v43Tag">需要 '+p.demand+'/h</span><span class="v43Tag">'+(p.rank==='E'?'初期解禁':'都市ランク'+p.rank)+'</span></div>';
+    if(!link){
+      body+='<div class="v43Field"><label>接続する境界駅</label><select data-v43station="'+p.id+'" '+(!edge.length?'disabled':'')+'>'+v43StationOptions(edge[0]?edge[0].id:null)+'</select></div>';
+      body+='<button class="v43Action" data-v43action="sign" data-partner="'+p.id+'" '+(!canSign?'disabled':'')+'>'+(locked?'都市ランク'+p.rank+'で解禁':S.cash<p.fee?'資金不足':'接続協定を結ぶ')+'</button>';
+    }else{
+      body+='<div class="v43Connected">接続済み：<b>'+(station?station.name:'駅情報なし')+'</b> ↔ '+p.company+' '+p.line+'</div>';
+      body+='<div class="v43Field"><label>相互直通する自社路線（接続駅が始発・終着）</label><select data-v43line="'+p.id+'">'+v43LineOptions(link.stationId,link.lineId)+'</select></div>';
+      if(link.lineId){
+        const line=S.lines.find(function(l){return l.id===link.lineId});
+        body+='<button class="v43Action danger" data-v43action="stop" data-partner="'+p.id+'">直通運転を終了</button>';
+        if(line)body+='<div class="v43Connected">運転中：<b>'+line.name+'</b> ↔ '+p.line+'</div>';
+      }else{
+        const ok=v43CompatibleLines(link.stationId).length>0;
+        body+='<button class="v43Action" data-v43action="start" data-partner="'+p.id+'" '+(!ok?'disabled':'')+'>'+(ok?'相互直通を開始':'接続駅を路線の終点にしてください')+'</button>';
+      }
+    }
+    body+='</div>';return body;
+  }).join('');
+  if(!edge.length){
+    $('v43Grid').insertAdjacentHTML('afterbegin','<div class="v43Empty">相互直通には「境界駅」が必要です。<br>マップ端から約3マス以内に駅を建設し、その駅を自社路線の始発または終着にしてください。</div>');
+  }
+}
+function v43Open(){
+  v43EnsureState();
+  $('v43Overlay').classList.add('open');v43RenderPanel();
+}
+function v43Close(){$('v43Overlay').classList.remove('open')}
+function v43Sign(partnerId){
+  v43EnsureState();const p=v43Partner(partnerId);if(!p||v43Link(partnerId))return;
+  if(!v43RankOK(p)){notify(p.company+'は都市ランク'+p.rank+'で解禁されます。');return}
+  const sel=document.querySelector('[data-v43station="'+partnerId+'"]'),stationId=sel?+sel.value:0;
+  const st=S.stations.find(function(s){return s.id===stationId});
+  if(!st||!v43BoundaryStations().some(function(s){return s.id===st.id})){notify('接続可能な境界駅を選んでください。');return}
+  if(S.cash<p.fee){notify('接続契約の資金が足りません。');return}
+  S.cash-=p.fee;S.partnerLinks.push({partnerId:p.id,stationId:st.id,lineId:null,signedDay:S.day});
+  S.news=p.company+' '+p.line+'との接続協定を締結。'+st.name+'が他社線との境界駅になりました。';
+  notify(S.news);save();render();v43RenderPanel();
+}
+function v43Start(partnerId){
+  v43EnsureState();const p=v43Partner(partnerId),link=v43Link(partnerId);if(!p||!link)return;
+  const sel=document.querySelector('[data-v43line="'+partnerId+'"]'),lineId=sel?+sel.value:0;
+  const line=S.lines.find(function(l){return l.id===lineId});
+  if(!line||!v43LineTerminatesAt(line,link.stationId)){notify('接続駅が始発・終着の路線を選んでください。');return}
+  if(line.throughPartnerId&&line.throughPartnerId!==partnerId){notify('この路線はすでに別の他社線と直通しています。');return}
+  for(const other of S.lines){if(other.throughPartnerId===partnerId&&other.id!==line.id){other.throughPartnerId=null;other.throughStationId=null}}
+  line.throughPartnerId=partnerId;line.throughStationId=link.stationId;link.lineId=line.id;
+  S.news=line.name+'が'+p.company+' '+p.line+'との相互直通運転を開始しました。';
+  event('相互直通 開始！',line.name+'の列車が'+p.company+' '+p.line+'へ直通。境界駅を越える新しい旅客流動が生まれます。',ASSETS.future);
+  notify(S.news);save();render();v43RenderPanel();
+}
+function v43Stop(partnerId){
+  v43EnsureState();const p=v43Partner(partnerId),link=v43Link(partnerId);if(!p||!link)return;
+  const line=S.lines.find(function(l){return l.id===link.lineId});
+  if(line){line.throughPartnerId=null;line.throughStationId=null}
+  link.lineId=null;S.news=p.company+' '+p.line+'との直通運転を終了しました。接続協定は維持されます。';
+  notify(S.news);save();render();v43RenderPanel();
+}
+function v43GenerateThroughDemand(){
+  v43EnsureState();if(S.stations.length<2||!S.lines.length)return;
+  const rush=isRushHour();
+  for(const link of v43ThroughLinks()){
+    const p=v43Partner(link.partnerId),line=S.lines.find(function(l){return l.id===link.lineId}),boundary=S.stations.find(function(s){return s.id===link.stationId});
+    if(!p||!line||!boundary||!v43LineTerminatesAt(line,boundary.id))continue;
+    const stops=serviceStops(line);if(stops.length<2)continue;
+    const other=stops[0].id===boundary.id?stops[stops.length-1]:stops[0];
+    if(!other||other.id===boundary.id)continue;
+    const hourFactor=(S.hour>=10&&S.hour<16)?0.82:(S.hour>=21||S.hour<6)?0.28:1;
+    const serviceFactor=line.service==='express'?0.82:line.service==='rapid'?1.06:1;
+    const base=Math.max(1,Math.round(p.demand*(rush?1.55:1)*hourFactor*serviceFactor));
+    const inbound=Math.max(1,Math.round(base*(S.hour>=6&&S.hour<12?1.16:0.84)));
+    const outbound=Math.max(1,Math.round(base*(S.hour>=16&&S.hour<22?1.18:0.82)));
+    addWaitingGroup(boundary,other.id,inbound,0,false);
+    addWaitingGroup(other,boundary.id,outbound,0,false);
+    S.v43ThroughPax=(S.v43ThroughPax||0)+inbound+outbound;
+  }
+}
+function v43ExtensionVector(s){
+  const d=[{v:s.x,dx:-2.6,dy:0},{v:GW-s.x,dx:2.6,dy:0},{v:s.y,dx:0,dy:-2.6},{v:GH-s.y,dx:0,dy:2.6}].sort(function(a,b){return a.v-b.v});
+  return d[0];
+}
+function v43DrawPartnerExtensions(){
+  v43EnsureState();const sc=S.zoom;
+  for(const link of S.partnerLinks){
+    const p=v43Partner(link.partnerId),s=S.stations.find(function(x){return x.id===link.stationId});if(!p||!s)continue;
+    const v=v43ExtensionVector(s),a=worldToScreen(s.x,s.y),b=worldToScreen(s.x+v.dx,s.y+v.dy);
+    ctx.save();ctx.lineCap='round';ctx.setLineDash(link.lineId?[]:[8*sc,6*sc]);ctx.strokeStyle=p.color;ctx.lineWidth=(link.lineId?5:3)*sc;ctx.globalAlpha=link.lineId?.94:.65;
+    ctx.beginPath();ctx.moveTo(a.x,a.y-9*sc);ctx.lineTo(b.x,b.y-9*sc);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(a.x,a.y-9*sc,5*sc,0,Math.PI*2);ctx.fill();
+    ctx.font='900 '+Math.max(8,10*sc)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';ctx.lineWidth=3;ctx.strokeStyle='rgba(4,15,24,.9)';ctx.fillStyle='#fff';
+    const label=p.company+' '+p.line+(link.lineId?' 直通':' 接続');
+    ctx.strokeText(label,b.x,b.y-14*sc);ctx.fillText(label,b.x,b.y-14*sc);ctx.restore();
+  }
+}
+function v43DecorateLines(){
+  const box=$('lineList');if(!box)return;
+  const cards=box.querySelectorAll('.lineCard');
+  S.lines.forEach(function(l,i){
+    const card=cards[i];if(!card||!l.throughPartnerId)return;
+    const p=v43Partner(l.throughPartnerId);if(!p)return;
+    const badge=document.createElement('span');badge.className='v43ThroughBadge';badge.textContent='↔ '+p.company+' '+p.line+' 直通';card.appendChild(badge);
+  });
+}
+function v43RefreshButton(){
+  const b=$('v43ThroughBtn');if(!b)return;b.classList.toggle('v43Active',v43ThroughLinks().length>0);
+}
+const v43Overlay=document.createElement('div');
+v43Overlay.id='v43Overlay';v43Overlay.className='v43Overlay';
+v43Overlay.innerHTML='<div class="v43Panel"><div class="v43Head"><h2>🤝 他社線・相互直通 <small>RAIL CITY v43 / PARTNER RAILWAY NETWORK</small></h2><button class="v43Close" id="v43Close">×</button></div><div class="v43Intro"><b>境界駅から他社ネットワークへ。</b> マップ端の駅で接続協定を結び、その駅を始発・終着とする自社路線を相互直通に設定できます。直通後は他社線からの旅客が実際の待ち客として流入し、混雑・輸送人員・運賃収入へ反映されます。</div><div class="v43Summary"><div class="v43Metric"><small>接続協定</small><b id="v43SignedCount">0社</b></div><div class="v43Metric"><small>直通運転</small><b id="v43ActiveCount">0路線</b></div><div class="v43Metric"><small>累計外部流動</small><b id="v43PaxCount">0人</b></div></div><div class="v43Grid" id="v43Grid"></div></div>';
+document.body.appendChild(v43Overlay);
+const v43Button=document.createElement('button');
+v43Button.id='v43ThroughBtn';v43Button.innerHTML='<span>🤝</span>相互直通';
+const v43Toolbar=document.querySelector('.toolbar');
+if(v43Toolbar){
+  const firstSpeed=v43Toolbar.querySelector('[data-speed]');
+  if(firstSpeed)v43Toolbar.insertBefore(v43Button,firstSpeed);else v43Toolbar.appendChild(v43Button);
+}
+v43Button.onclick=v43Open;$('v43Close').onclick=v43Close;
+v43Overlay.addEventListener('click',function(e){
+  if(e.target===v43Overlay){v43Close();return}
+  const b=e.target.closest('[data-v43action]');if(!b)return;
+  const a=b.dataset.v43action,p=b.dataset.partner;
+  if(a==='sign')v43Sign(p);else if(a==='start')v43Start(p);else if(a==='stop')v43Stop(p);
+});
+const v43BaseSimHour=simHour;
+simHour=function(){v43BaseSimHour();v43GenerateThroughDemand();save()};
+const v43BaseDraw=draw;
+draw=function(){v43BaseDraw();v43DrawPartnerExtensions()};
+const v43BaseRender=render;
+render=function(){v43EnsureState();v43BaseRender();v43DecorateLines();v43RefreshButton();v43RenderPanel()};
+document.title='RAIL CITY v43 — 2.5D City Alpha';
+v43EnsureState();v43RefreshButton();
+
 })();
 </script>
 </body></html>
