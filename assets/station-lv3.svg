@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 205"><defs><filter id="s"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-opacity=".28"/></filter><linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#bfe8f7"/><stop offset=".5" stop-color="#67aeca"/><stop offset="1" stop-color="#2e7798"/></linearGradient></defs>
+<g filter="url(#s)"><path d="M14 155l124-65 165 52-125 62z" fill="#d6d3ca" stroke="#839498" stroke-width="3"/><path d="M92 85l76-44 96 31-74 48z" fill="#f1f4f3" stroke="#426b7e" stroke-width="4"/><path d="M102 77l66-43 95 30-76 39z" fill="url(#glass)" stroke="#3a7896" stroke-width="4"/>
+<g stroke="#d8f2fb" stroke-width="3" opacity=".9"><path d="M119 70l54-32M143 78l54-32M167 86l54-32M192 94l54-31"/></g>
+<path d="M51 128l117-60 27 9-117 61z" fill="#e4e1d8" stroke="#6e8087" stroke-width="3"/><path d="M58 122l108-56" stroke="#f0cb51" stroke-width="5"/><path d="M50 112l103-53 23 8-103 54z" fill="#6096af"/>
+<path d="M161 74l39 13-48 44-30-11z" fill="#e3ecee" stroke="#677f8b" stroke-width="3"/><path d="M176 77l19 7-44 39" fill="none" stroke="#4c6d7a" stroke-width="5"/>
+<rect x="137" y="81" width="20" height="29" fill="#3e7898"/><rect x="209" y="76" width="24" height="31" fill="#3e7898"/>
+<g fill="#438b55"><circle cx="35" cy="142" r="16"/><circle cx="263" cy="117" r="18"/><circle cx="281" cy="141" r="13"/><circle cx="87" cy="153" r="12"/></g>
+<rect x="193" y="105" width="48" height="18" rx="3" fill="#f6fbfc" stroke="#2f6f8c" stroke-width="2"/><text x="217" y="118" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#14506d">RAIL CITY</text></g></svg>
