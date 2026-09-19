@@ -782,6 +782,66 @@ select,input{
   }
 }
 
+
+/* v39.1: Safari-safe track confirmation */
+@media(max-width:640px){
+  #game.track-construction .buildConfirmBar{
+    position:fixed!important;
+    z-index:140!important;
+    left:6px!important;
+    right:50px!important;
+    bottom:max(8px,calc(env(safe-area-inset-bottom) + 6px))!important;
+    transform:none!important;
+    width:auto!important;
+    max-width:none!important;
+    min-height:58px;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 128px!important;
+    gap:5px!important;
+    padding:6px!important;
+    border-radius:13px!important;
+    background:rgba(4,18,30,.96)!important;
+    border:1px solid rgba(92,205,255,.62)!important;
+    box-shadow:0 12px 34px rgba(0,0,0,.42)!important;
+    pointer-events:auto!important
+  }
+  #game.track-construction .buildStats{
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:3px 7px!important;
+    padding:0 4px!important;
+    align-items:center
+  }
+  #game.track-construction .buildStats>div:nth-child(2),
+  #game.track-construction .buildStats>div:nth-child(3){display:none!important}
+  #game.track-construction .buildStats small{
+    font-size:7px!important;line-height:1.1;color:#9eb9cb!important
+  }
+  #game.track-construction .buildStats b{
+    font-size:10px!important;line-height:1.15;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+  }
+  #game.track-construction #buildNow{
+    display:block!important;
+    min-width:0!important;width:100%!important;
+    min-height:46px!important;margin:0!important;
+    padding:5px 7px!important;
+    border-radius:10px!important;
+    font-size:11px!important;
+    line-height:1.15!important
+  }
+  #game.track-construction #buildNow:not(:disabled){
+    box-shadow:0 0 0 1px rgba(103,255,187,.22),0 7px 22px rgba(15,191,107,.3)!important
+  }
+  #game.track-construction .cameraDock{
+    bottom:max(78px,calc(env(safe-area-inset-bottom) + 76px))!important
+  }
+  #game.track-construction .tutorialCoachChip{
+    bottom:max(78px,calc(env(safe-area-inset-bottom) + 76px))!important
+  }
+}
+
 </style>
 </head>
 <body>
@@ -850,7 +910,7 @@ select,input{
       <div><small>立ち退き費</small><b id="buildDemolition">0万円</b></div>
       <div><small>建設判定</small><b id="buildStatus" class="buildStatus">ルート未設定</b></div>
     </div>
-    <button id="buildNow" class="buildNow" disabled>建設する</button>
+    <button id="buildNow" class="buildNow" disabled>線路を敷設する</button>
   </div>
 </div>
 <div id="stationHud" class="stationHud hidden">
@@ -1824,7 +1884,7 @@ if($('trainFollowHud')){$('trainFollowHud').classList.toggle('hidden',!ft);if(ft
 
 if($('connectionHint')){let cp=currentBuildPoints(),ci=connectionInfoForPoints(cp),c=ci.end||ci.start;$('connectionHint').classList.toggle('show',S.mode==='track'&&!!c);$('connectionHint').textContent=c?(c.kind==='middle'?'既存線へ分岐接続':'既存線へ延伸接続'):'既存線に接続'} 
 
-let ba=buildAssessment();if($('buildCost'))$('buildCost').textContent=formatBuildYen(ba.total);if($('buildDistance'))$('buildDistance').textContent=trackDistanceText(ba.points);if($('buildDemolition'))$('buildDemolition').textContent=formatBuildYen(ba.demolition);if($('buildStatus')){let ci=connectionInfoForPoints(ba.points),conn=ci.start||ci.end;$('buildStatus').textContent=ba.valid?(conn?(conn.kind==='middle'?'分岐接続可能':'既存線へ延伸可能'):(S.buildStructure==='ground'?(ba.demolition?'建設可・立退あり':'建設可能'):(S.buildStructure==='elevated'?'建設可能・高架':'建設可能・地下'))):(ba.invalidReason||'建設不可');$('buildStatus').className='buildStatus '+(ba.valid?(ba.demolition?'warn':'good'):'bad')}if($('buildNow'))$('buildNow').disabled=!ba.valid||S.cash<ba.total;document.querySelectorAll('[data-structure]').forEach(b=>b.classList.toggle('active',S.mode==='track'&&b.dataset.structure===S.buildStructure));if($('buildDouble'))$('buildDouble').classList.toggle('active',!!S.buildDouble);
+let ba=buildAssessment();if($('buildCost'))$('buildCost').textContent=formatBuildYen(ba.total);if($('buildDistance'))$('buildDistance').textContent=trackDistanceText(ba.points);if($('buildDemolition'))$('buildDemolition').textContent=formatBuildYen(ba.demolition);if($('buildStatus')){let ci=connectionInfoForPoints(ba.points),conn=ci.start||ci.end;$('buildStatus').textContent=ba.valid?(conn?(conn.kind==='middle'?'分岐接続可能':'既存線へ延伸可能'):(S.buildStructure==='ground'?(ba.demolition?'建設可・立退あり':'建設可能'):(S.buildStructure==='elevated'?'建設可能・高架':'建設可能・地下'))):(ba.invalidReason||'建設不可');$('buildStatus').className='buildStatus '+(ba.valid?(ba.demolition?'warn':'good'):'bad')}if($('buildNow')){let bn=$('buildNow');bn.disabled=!ba.valid||S.cash<ba.total;bn.textContent=ba.valid?(S.cash<ba.total?'資金不足':'線路を敷設する'):'ルートを指定してください'}document.querySelectorAll('[data-structure]').forEach(b=>b.classList.toggle('active',S.mode==='track'&&b.dataset.structure===S.buildStructure));if($('buildDouble'))$('buildDouble').classList.toggle('active',!!S.buildDouble);
 if($('seasonBadge'))$('seasonBadge').textContent=seasonLabel()+'｜都市'+(S.cityRank||'E')+'｜Day '+S.day;
 document.querySelectorAll('[data-managetab]').forEach(x=>x.classList.toggle('active',x.dataset.managetab===S.manageTab));
 if($('manageGrid')){if(S.manageTab==='stations'){$('manageGrid').innerHTML=S.stations.length?S.stations.map(s=>{let m=stationCatchmentMetrics(s.x,s.y),level=s.level||1,wait=s.waiting||0,pct=Math.min(100,Math.round(wait/Math.max(1,stationHandling(s))*100));return '<div class="manageCard"><h4>🚉 '+s.name+' <span style="color:#75d8ff">Lv.'+level+'</span></h4><div class="meta">駅勢圏 '+m.population.toLocaleString()+'人｜予想 '+m.users.toLocaleString()+'人/日｜平均待ち '+(s.avgWait||0).toFixed(1)+'時間</div><div class="manageStats"><div><small>待ち客</small><b class="'+((s.avgWait||0)>2?'passengerBad':(s.avgWait||0)>1?'passengerWarn':'passengerGood')+'">'+wait.toLocaleString()+'人</b></div><div><small>累計乗車</small><b>'+s.pax.toLocaleString()+'人</b></div><div><small>売上</small><b>'+Math.round(s.sales/1e4).toLocaleString()+'万円</b></div><div><small>処理力</small><b>'+stationHandling(s).toLocaleString()+'/時</b></div></div><div class="capacityBar"><i style="width:'+pct+'%"></i></div><div class="manageActions"><button data-manageaction="renameStation" data-id="'+s.id+'">名称変更</button><button class="good" data-manageaction="upgradeStation" data-id="'+s.id+'" '+(level>=3?'disabled':'')+'>駅改良 '+(stationUpgradeCost(s)/1e8).toFixed(0)+'億</button></div></div>'}).join(''):'<div class="muted">駅がありません。</div>'}else{$('manageGrid').innerHTML=S.trains.length?S.trains.map(tr=>{let line=S.lines.find(l=>l.id===tr.lineId),pct=Math.min(100,Math.round((tr.pax||0)/Math.max(1,tr.cap)*100));return '<div class="manageCard"><h4>🚆 '+tr.name+' <span style="color:#75d8ff">'+(tr.cars||6)+'両</span></h4><div class="meta">'+(TRAIN_TYPES[tr.trainType]?.label||'通勤型')+'｜'+trainStatusText(tr)+'｜定員 '+tr.cap.toLocaleString()+'人｜乗車 '+(tr.pax||0).toLocaleString()+'人｜混雑 '+Math.round((tr.pax||0)/Math.max(1,tr.cap)*100)+'%'+(tr.rushOnly?'｜ラッシュ増発':'')+'</div><div class="capacityBar"><i style="width:'+pct+'%"></i></div><div class="manageActions"><select data-trainline="'+tr.id+'">'+S.lines.map(l=>'<option value="'+l.id+'" '+(l.id===tr.lineId?'selected':'')+'>'+l.name+'</option>').join('')+'</select><button class="good" data-manageaction="upgradeTrain" data-id="'+tr.id+'" '+((tr.cars||6)>=10?'disabled':'')+'>増結 2億</button><button class="danger" data-manageaction="retireTrain" data-id="'+tr.id+'">引退</button></div></div>'}).join(''):'<div class="muted">列車がありません。</div>'}}
