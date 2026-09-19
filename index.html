@@ -859,7 +859,24 @@ function unlockedText(){return[
 {rank:'S',text:'メトロポリス'}
 ]}
 function updateCityRank(){let info=cityRankInfo(),old=S.cityRank||'E';S.cityRank=info.rank;if(old!==info.rank&&!S.rankRewarded.includes(info.rank)){S.rankRewarded.push(info.rank);let reward={D:5e8,C:8e8,B:12e8,A:18e8,S:30e8}[info.rank]||0;S.cash+=reward;event('都市ランク '+info.rank+' 達成！','鉄道と街の成長が評価されました。都市整備支援 '+(reward/1e8).toFixed(0)+'億円を獲得。',ASSETS.hero);notify('都市ランク '+info.rank+' に上昇しました。')}} 
-function drawStationPlaza(s){let p=worldToScreen(s.x,s.y),sc=S.zoom,usage=(s.pax||0)/Math.max(1,S.day);if((s.level||1)<2&&usage<350)return;ctx.save();ctx.fillStyle='rgba(220,228,230,.9)';ctx.strokeStyle='rgba(75,95,105,.55)';ctx.lineWidth=1*sc;ctx.beginPath();ctx.ellipse(p.x,p.y+13*sc,26*sc,11*sc,0,0,Math.PI*2);ctx.fill();ctx.stroke();let people=Math.min(12,Math.max(3,Math.round(usage/180)));for(let i=0;i<people;i++){let a=(i*2.37+visualClock*.08)%(Math.PI*2),r=8+(i%4)*3,qx=p.x+Math.cos(a)*r*sc,qy=p.y+13*sc+Math.sin(a)*r*.42*sc;ctx.fillStyle=i%3===0?'#e85f65':i%3===1?'#396f9f':'#e1b44a';ctx.beginPath();ctx.arc(qx,qy,1.6*sc,0,Math.PI*2);ctx.fill()}ctx.restore()}
+/* v31: station platforms, canopies and station buildings */
+function stationVisualFrame(s){
+  let t=S.tracks.find(x=>x.id===s.trackId),q=t?pointAt(t,s.progress):{x:s.x,y:s.y,ang:0},p=worldToScreen(q.x,q.y),q2=worldToScreen(q.x+Math.cos(q.ang)*.2,q.y+Math.sin(q.ang)*.2),vx=q2.x-p.x,vy=q2.y-p.y,vl=Math.hypot(vx,vy)||1;
+  return{t,q,p:{x:p.x,y:p.y+(t?trackYOffset(t):0)},ux:vx/vl,uy:vy/vl,nx:-vy/vl,ny:vx/vl,ang:Math.atan2(vy,vx)}
+}
+function drawStationPlaza(s){
+  let f=stationVisualFrame(s),p=f.p,sc=S.zoom,lv=s.level||1,usage=(s.pax||0)/Math.max(1,S.day);
+  if(lv<2&&usage<220)return;
+  let px=p.x+f.nx*(18+lv*3)*sc,py=p.y+f.ny*(18+lv*3)*sc+8*sc,rx=(17+lv*7)*sc,ry=(7+lv*2.5)*sc;
+  ctx.save();
+  ctx.fillStyle=lv>=3?'rgba(224,229,225,.94)':'rgba(218,226,226,.90)';ctx.strokeStyle='rgba(74,94,103,.52)';ctx.lineWidth=1*sc;
+  ctx.beginPath();ctx.ellipse(px,py,rx,ry,f.ang,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.strokeStyle='rgba(110,125,130,.38)';ctx.lineWidth=.8*sc;ctx.beginPath();ctx.moveTo(px-rx*.58,py);ctx.lineTo(px+rx*.58,py);ctx.stroke();
+  if(lv>=3){ctx.fillStyle='#5b7e8f';ctx.fillRect(px-7*sc,py-2.2*sc,14*sc,4.4*sc);ctx.fillStyle='#d9e4e9';ctx.fillRect(px-4*sc,py-4.4*sc,8*sc,2.2*sc)}
+  let people=Math.min(18,Math.max(lv+1,Math.round(usage/130)));for(let i=0;i<people;i++){let aa=(i*2.21+visualClock*.13)%(Math.PI*2),r=(5+(i%5)*3)*sc,qx=px+Math.cos(aa)*r,qy=py+Math.sin(aa)*r*.38;ctx.fillStyle=i%4===0?'#dc5d62':i%4===1?'#3e729d':i%4===2?'#d6aa3e':'#5b8b61';ctx.beginPath();ctx.arc(qx,qy,1.45*sc,0,Math.PI*2);ctx.fill()}
+  ctx.restore()
+}
+
 function growCity(){let before=totals().p,changed=0,major=0;for(const z of S.lots){if(z.buildFx>0)z.buildFx--;if(z.road||z.water||z.type==='park')continue;let pr=nearestStationPressure(z),pressure=pr.pressure,quality=(S.satisfaction||100)/100;if(z.type==='empty'&&z.access>.28&&rand(z.x,z.y,S.day*31)<Math.min(.38,.08+pressure*.24+z.access*.09)){let r=rand(z.x,z.y,S.day*57),busy=pressure>.62;z.type=busy?(r<.34?'res':r<.68?'com':'off'):(r<.58?'res':r<.79?'com':'off');z.lv=1;z.buildFx=2;changed++}else if((z.type==='res'||z.type==='com'||z.type==='off')&&z.lv<5){let maxLv=pressure>.76&&quality>.62?5:pressure>.42?4:3,chance=Math.min(.52,.035+pressure*.34+z.access*.08);if(z.lv<maxLv&&rand(z.x,z.y,S.day*73)<chance){z.lv++;z.buildFx=2;changed++;if(z.lv>=4){major++;S.redevelopmentCount++}}}if(z.lv>=5&&pressure>.82&&totals().p>30000&&rand(z.x,z.y,S.day*97)<.12)z.landmark=true}let after=totals().p,inc=after-before;S.lastPop=after;updateCityRank();notify(inc>0?'鉄道需要に合わせて再開発が進み、人口が '+inc.toLocaleString()+' 人増えました。':'街は安定しています。混雑や待ち時間を改善すると再開発が進みやすくなります。');if((changed>=5||major>=2)&&S.day%2===0)event('沿線再開発',changed+'区画が更新され、高層化 '+major+'件。利用者が多く満足度の高い駅前ほど成長しています。',ASSETS.hero);if(after>=60000&&before<60000)event('大都市圏へ成長！','駅前に高層住宅・オフィス・商業が集まり、鉄道中心の大都市圏になりました。',ASSETS.hero)}
 function simHour(){S.hour++;if(S.hour>=24){S.hour=0;S.day++;settleDay();growCity();checkMissionCompletion()}for(const s of S.stations){for(const g of(s.waitingGroups||[]))g.waitHours=(g.waitHours||0)+1;syncStationWaiting(s)}generatePassengerDemand();let avgWait=S.passengerStats.waitSamples?S.passengerStats.totalWait/S.passengerStats.waitSamples:0,avgCrowd=S.passengerStats.crowdingSamples?S.passengerStats.crowdingSum/S.passengerStats.crowdingSamples:0,waiting=S.stations.reduce((n,s)=>n+(s.waiting||0),0);S.satisfaction=Math.max(20,Math.min(100,Math.round(100-avgWait*5-Math.max(0,avgCrowd-.75)*45-Math.min(25,waiting/180))));save()}
 function daypart(){return S.hour<5?'深夜':S.hour<10?'朝':S.hour<17?'昼':S.hour<20?'夕方':'夜'}
@@ -972,7 +989,41 @@ function drawCityAtmosphere(){
 }
 function trackYOffset(t){return(t.structure||'ground')==='elevated'?-10*S.zoom:0}
 function drawTrack(t,preview){if(!t.points||t.points.length<2)return;ctx.lineJoin='round';ctx.lineCap='round';let pts=t.points.map(p=>worldToScreen(p.x,p.y)),structure=t.structure||'ground',yoff=trackYOffset(t),invalid=!!t.invalid;function strokePath(dx,dy,baseW){ctx.save();ctx.translate(dx,yoff+dy);ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);if(preview){ctx.strokeStyle=invalid?'rgba(255,92,92,.95)':structure==='tunnel'?'rgba(184,125,255,.95)':structure==='elevated'?'rgba(89,218,255,.95)':'rgba(77,194,255,.95)';ctx.lineWidth=7*S.zoom;ctx.setLineDash([12*S.zoom,8*S.zoom]);ctx.stroke()}else if(structure==='tunnel'){ctx.strokeStyle='rgba(34,42,55,.82)';ctx.lineWidth=8*S.zoom;ctx.setLineDash([5*S.zoom,6*S.zoom]);ctx.stroke();ctx.strokeStyle='rgba(172,133,224,.7)';ctx.lineWidth=2*S.zoom;ctx.stroke()}else{ctx.strokeStyle='rgba(20,25,29,.95)';ctx.lineWidth=baseW*S.zoom;ctx.setLineDash([]);ctx.stroke();ctx.strokeStyle='#d8e0e5';ctx.lineWidth=2.2*S.zoom;ctx.setLineDash([8*S.zoom,7*S.zoom]);ctx.stroke()}ctx.restore()}let dbl=!!t.doubleTrack;if(dbl){let off=4.1*S.zoom;strokePath(-off*.55,off*.4,preview?6:7);strokePath(off*.55,-off*.4,preview?6:7)}else strokePath(0,0,preview?7:10);ctx.setLineDash([]);if(!preview&&structure==='elevated'){let total=Math.max(3,Math.ceil(trackLength(t)/1.8));for(let i=1;i<total;i++){let q=pointAt(t,i/total),p=worldToScreen(q.x,q.y);ctx.strokeStyle='rgba(65,76,83,.68)';ctx.lineWidth=2*S.zoom;ctx.beginPath();ctx.moveTo(p.x,p.y+yoff+2*S.zoom);ctx.lineTo(p.x,p.y+9*S.zoom);ctx.stroke()}}if(!preview&&structure==='tunnel'){for(const u of[0,1]){let q=pointAt(t,u),p=worldToScreen(q.x,q.y);ctx.fillStyle='#252d35';ctx.beginPath();ctx.arc(p.x,p.y,7*S.zoom,Math.PI,0);ctx.fill();ctx.strokeStyle='#a78bd1';ctx.lineWidth=1.5*S.zoom;ctx.stroke()}}if(!preview){let blocks=Math.max(2,t.signalBlocks||2);for(let i=1;i<blocks;i++){let q=pointAt(t,i/blocks),p=worldToScreen(q.x,q.y);p.y+=yoff;ctx.fillStyle='#192733';ctx.fillRect(p.x-2*S.zoom,p.y-9*S.zoom,4*S.zoom,9*S.zoom);ctx.fillStyle=signalColorFor(t,i);ctx.beginPath();ctx.arc(p.x,p.y-10*S.zoom,2.7*S.zoom,0,Math.PI*2);ctx.fill()}if(Array.isArray(t.junctionPoints)){for(const j of t.junctionPoints)drawRailSwitch(t,j,yoff)}}}
-function drawStation(s){let p=worldToScreen(s.x,s.y),sc=S.zoom;ctx.fillStyle='rgba(65,187,255,.16)';ctx.beginPath();ctx.arc(p.x,p.y,23*sc,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f7fbff';ctx.strokeStyle='#1b6c9b';ctx.lineWidth=2*sc;ctx.beginPath();ctx.roundRect(p.x-15*sc,p.y-9*sc,30*sc,15*sc,4*sc);ctx.fill();ctx.stroke();ctx.fillStyle='#2ba6ea';ctx.fillRect(p.x-15*sc,p.y-9*sc,30*sc,4*sc);ctx.font=`${Math.max(9,11*sc)}px sans-serif`;ctx.fillStyle='#fff';ctx.strokeStyle='rgba(7,20,32,.9)';ctx.lineWidth=3;ctx.strokeText(s.name,p.x+18*sc,p.y-10*sc);ctx.fillText(s.name,p.x+18*sc,p.y-10*sc)}
+function drawStation(s){
+  let f=stationVisualFrame(s),t=f.t,p=f.p,sc=S.zoom,lv=Math.max(1,Math.min(3,s.level||1)),len=(lv===1?31:lv===2?43:55)*sc,platformW=(lv===1?5.2:6.2)*sc,tracks=t&&t.doubleTrack?2:1;
+  ctx.save();ctx.translate(p.x,p.y);ctx.rotate(f.ang);
+  ctx.fillStyle='rgba(7,20,28,.22)';ctx.beginPath();ctx.roundRect(-len*.52,3*sc,len*1.04,(tracks===2?20:14)*sc,4*sc);ctx.fill();
+  let offsets=tracks===2?[-7.2*sc,7.2*sc]:[6.2*sc];
+  for(const off of offsets){
+    ctx.fillStyle='#e5e2d7';ctx.strokeStyle='rgba(70,83,89,.72)';ctx.lineWidth=.9*sc;ctx.beginPath();ctx.roundRect(-len/2,off-platformW/2,len,platformW,1.5*sc);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#e9c957';ctx.fillRect(-len*.47,off-platformW*.46,len*.94,1.05*sc);
+    if(lv>=2){
+      ctx.fillStyle=lv===3?'rgba(82,119,139,.93)':'rgba(105,137,151,.90)';ctx.beginPath();ctx.roundRect(-len*.36,off-platformW/2-5.2*sc,len*.72,4.7*sc,2*sc);ctx.fill();
+      ctx.strokeStyle='rgba(45,67,78,.72)';ctx.lineWidth=1*sc;for(const x of[-.28,-.09,.10,.29]){ctx.beginPath();ctx.moveTo(len*x,off-platformW/2-.6*sc);ctx.lineTo(len*x,off-platformW/2-5.2*sc);ctx.stroke()}
+    }else{
+      ctx.fillStyle='rgba(89,124,141,.88)';ctx.fillRect(-7*sc,off-platformW/2-4*sc,14*sc,3.5*sc)
+    }
+    ctx.fillStyle='#f5fbff';ctx.strokeStyle='#2b6d91';ctx.lineWidth=.7*sc;ctx.fillRect(-4.5*sc,off-2*sc,9*sc,4*sc);ctx.strokeRect(-4.5*sc,off-2*sc,9*sc,4*sc)
+  }
+  if(lv>=3&&tracks===2){ctx.fillStyle='rgba(206,215,215,.92)';ctx.fillRect(-len*.18,-2.2*sc,len*.36,4.4*sc)}
+  ctx.restore();
+
+  let buildingSide=tracks===2?1:-1,bx=p.x+f.nx*(tracks===2?19:16)*sc*buildingSide,by=p.y+f.ny*(tracks===2?19:16)*sc*buildingSide-(lv===1?8:12)*sc;
+  ctx.save();ctx.translate(bx,by);
+  let bw=(lv===1?18:lv===2?25:34)*sc,bh=(lv===1?10:lv===2?15:20)*sc;
+  ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(-bw*.42,4*sc,bw*.9,bh*.55);
+  ctx.fillStyle=lv===3?'#d9e4e8':'#eef1ed';ctx.strokeStyle='#315f76';ctx.lineWidth=1*sc;ctx.beginPath();ctx.roundRect(-bw/2,-bh/2,bw,bh,3*sc);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#2b91c1';ctx.fillRect(-bw/2,-bh/2,bw,3.3*sc);
+  ctx.fillStyle='#294c5f';let windows=lv+1;for(let i=0;i<windows;i++){let wx=-bw*.34+i*(bw*.68/Math.max(1,windows-1));ctx.fillRect(wx-2*sc,-1.5*sc,4*sc,3.5*sc)}
+  if(lv>=2){ctx.fillStyle='#f1d568';ctx.fillRect(-bw*.30,bh*.18,bw*.60,1.6*sc)}
+  if(lv===3){ctx.fillStyle='#465b66';ctx.fillRect(-bw*.18,-bh*.72,bw*.36,4.2*sc);ctx.fillStyle='#e9f3f5';ctx.fillRect(-bw*.12,-bh*.68,bw*.24,2.2*sc)}
+  ctx.restore();
+
+  ctx.save();ctx.font='bold '+Math.max(9,10.5*sc)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';ctx.lineWidth=3.2;ctx.strokeStyle='rgba(7,20,32,.92)';ctx.fillStyle='#fff';let labelY=p.y-(lv===3?35:lv===2?29:24)*sc;ctx.strokeText(s.name,p.x,labelY);ctx.fillText(s.name,p.x,labelY);
+  if(lv>=2){ctx.font='bold '+Math.max(7,8*sc)+'px sans-serif';ctx.fillStyle=lv===3?'#9de6ff':'#bcdff0';ctx.strokeText('Lv.'+lv,p.x,labelY-12*sc);ctx.fillText('Lv.'+lv,p.x,labelY-12*sc)}
+  ctx.restore()
+}
+
 /* v30: articulated multi-car train graphics */
 function trainVisualCarCount(tr){return Math.max(2,Math.min(10,tr.cars||6))}
 function trainVisualFormation(line,tr){
