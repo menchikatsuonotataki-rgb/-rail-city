@@ -842,6 +842,71 @@ select,input{
   }
 }
 
+
+/* v39.2: independent mobile track commit control */
+.trackCommitFloat{
+  display:none;
+}
+@media(max-width:640px){
+  .trackCommitFloat.show{
+    position:fixed;
+    z-index:9999;
+    left:10px;
+    right:62px;
+    bottom:max(92px,calc(env(safe-area-inset-bottom) + 88px));
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:7px;
+    border-radius:15px;
+    background:rgba(3,18,31,.97);
+    border:1px solid rgba(92,210,255,.74);
+    box-shadow:0 12px 36px rgba(0,0,0,.48);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    pointer-events:auto
+  }
+  .trackCommitFloat .trackCommitInfo{
+    min-width:0;
+    flex:1 1 auto;
+    padding:0 3px
+  }
+  .trackCommitFloat .trackCommitInfo small{
+    display:block;
+    color:#98b8cc;
+    font-size:7px;
+    font-weight:800;
+    line-height:1.2
+  }
+  .trackCommitFloat .trackCommitInfo b{
+    display:block;
+    margin-top:2px;
+    color:#fff;
+    font-size:10px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis
+  }
+  .trackCommitFloat button{
+    flex:0 0 142px;
+    min-height:50px;
+    padding:6px 8px;
+    border-radius:11px;
+    border:1px solid #5cf0a8;
+    background:linear-gradient(180deg,#22c777,#0d9c58);
+    color:#fff;
+    font-size:11px;
+    font-weight:950;
+    box-shadow:0 7px 20px rgba(10,181,100,.28)
+  }
+  .trackCommitFloat button:disabled{
+    opacity:.55;
+    filter:saturate(.45);
+    background:linear-gradient(180deg,#3b5261,#273c49);
+    border-color:#5e7380
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1039,6 +1104,14 @@ select,input{
 <div class="subbar"><button class="action" id="confirmTrack">線路を確定</button><button id="undoPoint">1点戻す</button><button id="cancelDraft">キャンセル</button><button id="zoomIn">＋拡大</button><button id="zoomOut">－縮小</button><button id="followTrainBtn">🎥 列車追跡</button><button id="tutorialBtn">❔ チュートリアル</button><button id="fullscreenBtn">⛶ 全画面</button><button id="saveBtn">保存</button><button id="resetBtn">最初から</button></div></section>
 <aside class="side"><section class="card visual"><img id="visualImage" alt="企画ボード"><div class="cap"><h3>企画ボードの世界観をゲームへ</h3><div class="muted">画像は演出用。実際のプレイ画面は固定画像ではなく、都市を毎フレーム描画しています。</div></div></section><section class="card"><h3>プレイ手順</h3><div id="steps"></div></section><section class="card"><h3>選択・路線情報</h3><div id="info" class="muted"></div><div id="lineList"></div></section><section class="card"><h3>都市ニュース</h3><div class="news" id="news">最初の線路を計画してください。</div></section></aside></div>
 </main>
+<div id="trackCommitFloat" class="trackCommitFloat">
+  <div class="trackCommitInfo">
+    <small id="trackCommitLabel">線路建設</small>
+    <b id="trackCommitMeta">始点と終点を指定してください</b>
+  </div>
+  <button id="trackCommitBtn" disabled>線路を敷設する</button>
+</div>
+
 <section id="tutorialOverlay" class="tutorialOverlay hidden" aria-live="polite">
   <div class="tutorialShell">
     <div class="tutorialHeader">
@@ -1549,7 +1622,7 @@ $('firstHour').onchange=()=>{if(S.timetableCandidate){S.timetableCandidate.first
 $('lastHour').onchange=()=>{if(S.timetableCandidate){S.timetableCandidate.lastHour=+$('lastHour').value;render()}};
 $('ttLineSelect').onchange=()=>openTimetableEditor(+$('ttLineSelect').value);$('ttStart').onclick=confirmTimetable;$('ttCancel').onclick=()=>setMode('inspect');document.querySelectorAll('[data-analysis]').forEach(b=>b.onclick=()=>{S.analysisLayer=b.dataset.analysis;render()});$('analysisClose').onclick=()=>setMode('inspect');$('companyClose').onclick=()=>setMode('inspect');$('missionsClose').onclick=()=>setMode('inspect');$('railOpsClose').onclick=()=>setMode('inspect');$('manageClose').onclick=()=>setMode('inspect');document.querySelectorAll('[data-managetab]').forEach(b=>b.onclick=()=>{S.manageTab=b.dataset.managetab;render()});$('manageGrid').onclick=e=>{let b=e.target.closest('[data-manageaction]');if(!b)return;let id=+b.dataset.id,a=b.dataset.manageaction;if(a==='upgradeStation')upgradeStation(id);else if(a==='renameStation')renameStation(id);else if(a==='upgradeTrain')upgradeTrain(id);else if(a==='retireTrain')retireTrain(id)};$('manageGrid').onchange=e=>{let x=e.target.closest('[data-trainline]');if(x)assignTrain(+x.dataset.trainline,+x.value)};$('upgradeDouble').onclick=upgradeDouble;$('upgradeSignal').onclick=upgradeSignal;$('upgradeJunction').onclick=upgradeJunction;$('infraTrackSelect').onchange=()=>{S.selectedTrack=+$('infraTrackSelect').value;render()};$('missionGrid').onclick=e=>{let b=e.target.closest('[data-claim]');if(b)claimMission(b.dataset.claim)};
 document.querySelectorAll('[data-trackshape]').forEach(b=>b.onclick=()=>{S.trackShape=b.dataset.trackshape;S.draft=[];document.querySelectorAll('[data-trackshape]').forEach(x=>x.classList.toggle('active',x.dataset.trackshape===S.trackShape));notify(S.trackShape==='straight'?'直線モード：始点から終点までドラッグしてください。':S.trackShape==='branch'?'分岐モード：既存線路から外へドラッグしてください。':'カーブモード：指でなぞった形に線路を計画します。');render()});
-$('toolsToggle').onclick=()=>{$('game').classList.toggle('tools-collapsed');$('toolsToggle').textContent=$('game').classList.contains('tools-collapsed')?'☰ ツール':'✕ 閉じる'};$('mapBackBtn').onclick=()=>setMode('inspect');if(window.innerWidth<=920){$('game').classList.add('tools-collapsed');$('toolsToggle').textContent='☰ ツール'}document.querySelectorAll('[data-structure],[data-buildmode],[data-stationmode],[data-analysis],[data-routecolor]').forEach(b=>b.addEventListener('click',()=>{if(window.innerWidth<=920){$('game').classList.add('tools-collapsed');$('toolsToggle').textContent='☰ ツール'}}));$('buildNow').onclick=confirmTrack;document.querySelector('[data-action="line"]').onclick=()=>{openRouteEditor();refreshTutorialFocus()};document.querySelector('[data-action="train"]').onclick=()=>{openTimetableEditor();refreshTutorialFocus()};document.querySelector('[data-action="analysis"]').onclick=openAnalysis;document.querySelector('[data-action="company"]').onclick=openCompany;document.querySelector('[data-action="missions"]').onclick=()=>{openMissions();refreshTutorialFocus()};document.querySelector('[data-action="railops"]').onclick=openRailOps;document.querySelector('[data-action="manage"]').onclick=()=>openManage();document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{S.speed=+b.dataset.speed;render()});$('fullscreenBtn').onclick=async()=>{try{let target=$('game');if(target.requestFullscreen){await target.requestFullscreen();}else if(target.webkitRequestFullscreen){target.webkitRequestFullscreen();}notify('全画面表示にしました。');}catch(e){notify('Safariではこのまま画面いっぱいで表示します。さらに広くする場合は「共有」→「ホーム画面に追加」を使えます。');}};$('confirmTrack').onclick=confirmTrack;$('undoPoint').onclick=()=>{S.draft.pop();render()};$('cancelDraft').onclick=()=>{S.draft=[];render()};function changeMapZoom(delta){S.followTrainId=null;S.zoom=Math.max(.68,Math.min(1.55,S.zoom+delta));render()}
+$('toolsToggle').onclick=()=>{$('game').classList.toggle('tools-collapsed');$('toolsToggle').textContent=$('game').classList.contains('tools-collapsed')?'☰ ツール':'✕ 閉じる'};$('mapBackBtn').onclick=()=>setMode('inspect');if(window.innerWidth<=920){$('game').classList.add('tools-collapsed');$('toolsToggle').textContent='☰ ツール'}document.querySelectorAll('[data-structure],[data-buildmode],[data-stationmode],[data-analysis],[data-routecolor]').forEach(b=>b.addEventListener('click',()=>{if(window.innerWidth<=920){$('game').classList.add('tools-collapsed');$('toolsToggle').textContent='☰ ツール'}}));$('buildNow').onclick=confirmTrack;if($('trackCommitBtn'))$('trackCommitBtn').onclick=confirmTrack;document.querySelector('[data-action="line"]').onclick=()=>{openRouteEditor();refreshTutorialFocus()};document.querySelector('[data-action="train"]').onclick=()=>{openTimetableEditor();refreshTutorialFocus()};document.querySelector('[data-action="analysis"]').onclick=openAnalysis;document.querySelector('[data-action="company"]').onclick=openCompany;document.querySelector('[data-action="missions"]').onclick=()=>{openMissions();refreshTutorialFocus()};document.querySelector('[data-action="railops"]').onclick=openRailOps;document.querySelector('[data-action="manage"]').onclick=()=>openManage();document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{S.speed=+b.dataset.speed;render()});$('fullscreenBtn').onclick=async()=>{try{let target=$('game');if(target.requestFullscreen){await target.requestFullscreen();}else if(target.webkitRequestFullscreen){target.webkitRequestFullscreen();}notify('全画面表示にしました。');}catch(e){notify('Safariではこのまま画面いっぱいで表示します。さらに広くする場合は「共有」→「ホーム画面に追加」を使えます。');}};$('confirmTrack').onclick=confirmTrack;$('undoPoint').onclick=()=>{S.draft.pop();render()};$('cancelDraft').onclick=()=>{S.draft=[];render()};function changeMapZoom(delta){S.followTrainId=null;S.zoom=Math.max(.68,Math.min(1.55,S.zoom+delta));render()}
 function centerMapView(){S.followTrainId=null;S.zoom=1;S.panX=0;S.panY=0;render();notify('カメラを中央に戻しました。')}
 $('zoomIn').onclick=()=>changeMapZoom(.1);$('zoomOut').onclick=()=>changeMapZoom(-.1);
 if($('mapZoomIn'))$('mapZoomIn').onclick=()=>changeMapZoom(.1);
@@ -1884,7 +1957,18 @@ if($('trainFollowHud')){$('trainFollowHud').classList.toggle('hidden',!ft);if(ft
 
 if($('connectionHint')){let cp=currentBuildPoints(),ci=connectionInfoForPoints(cp),c=ci.end||ci.start;$('connectionHint').classList.toggle('show',S.mode==='track'&&!!c);$('connectionHint').textContent=c?(c.kind==='middle'?'既存線へ分岐接続':'既存線へ延伸接続'):'既存線に接続'} 
 
-let ba=buildAssessment();if($('buildCost'))$('buildCost').textContent=formatBuildYen(ba.total);if($('buildDistance'))$('buildDistance').textContent=trackDistanceText(ba.points);if($('buildDemolition'))$('buildDemolition').textContent=formatBuildYen(ba.demolition);if($('buildStatus')){let ci=connectionInfoForPoints(ba.points),conn=ci.start||ci.end;$('buildStatus').textContent=ba.valid?(conn?(conn.kind==='middle'?'分岐接続可能':'既存線へ延伸可能'):(S.buildStructure==='ground'?(ba.demolition?'建設可・立退あり':'建設可能'):(S.buildStructure==='elevated'?'建設可能・高架':'建設可能・地下'))):(ba.invalidReason||'建設不可');$('buildStatus').className='buildStatus '+(ba.valid?(ba.demolition?'warn':'good'):'bad')}if($('buildNow')){let bn=$('buildNow');bn.disabled=!ba.valid||S.cash<ba.total;bn.textContent=ba.valid?(S.cash<ba.total?'資金不足':'線路を敷設する'):'ルートを指定してください'}document.querySelectorAll('[data-structure]').forEach(b=>b.classList.toggle('active',S.mode==='track'&&b.dataset.structure===S.buildStructure));if($('buildDouble'))$('buildDouble').classList.toggle('active',!!S.buildDouble);
+let ba=buildAssessment();if($('buildCost'))$('buildCost').textContent=formatBuildYen(ba.total);if($('buildDistance'))$('buildDistance').textContent=trackDistanceText(ba.points);if($('buildDemolition'))$('buildDemolition').textContent=formatBuildYen(ba.demolition);if($('buildStatus')){let ci=connectionInfoForPoints(ba.points),conn=ci.start||ci.end;$('buildStatus').textContent=ba.valid?(conn?(conn.kind==='middle'?'分岐接続可能':'既存線へ延伸可能'):(S.buildStructure==='ground'?(ba.demolition?'建設可・立退あり':'建設可能'):(S.buildStructure==='elevated'?'建設可能・高架':'建設可能・地下'))):(ba.invalidReason||'建設不可');$('buildStatus').className='buildStatus '+(ba.valid?(ba.demolition?'warn':'good'):'bad')}if($('buildNow')){let bn=$('buildNow');bn.disabled=!ba.valid||S.cash<ba.total;bn.textContent=ba.valid?(S.cash<ba.total?'資金不足':'線路を敷設する'):'ルートを指定してください'}
+if($('trackCommitFloat')){
+  let tc=$('trackCommitFloat'),tb=$('trackCommitBtn'),tm=$('trackCommitMeta'),tl=$('trackCommitLabel');
+  let show=S.mode==='track';
+  tc.classList.toggle('show',show);
+  if(show){
+    tb.disabled=!ba.valid||S.cash<ba.total;
+    tb.textContent=ba.valid?(S.cash<ba.total?'資金不足':'線路を敷設する'):'始点・終点を指定';
+    tl.textContent='線路建設｜'+trackDistanceText(ba.points);
+    tm.textContent=ba.valid?('建設費 '+formatBuildYen(ba.total)+'｜'+((S.buildStructure==='elevated')?'高架':S.buildStructure==='tunnel'?'トンネル':'地上線')):(ba.invalidReason||'始点と終点を指定してください');
+  }
+}document.querySelectorAll('[data-structure]').forEach(b=>b.classList.toggle('active',S.mode==='track'&&b.dataset.structure===S.buildStructure));if($('buildDouble'))$('buildDouble').classList.toggle('active',!!S.buildDouble);
 if($('seasonBadge'))$('seasonBadge').textContent=seasonLabel()+'｜都市'+(S.cityRank||'E')+'｜Day '+S.day;
 document.querySelectorAll('[data-managetab]').forEach(x=>x.classList.toggle('active',x.dataset.managetab===S.manageTab));
 if($('manageGrid')){if(S.manageTab==='stations'){$('manageGrid').innerHTML=S.stations.length?S.stations.map(s=>{let m=stationCatchmentMetrics(s.x,s.y),level=s.level||1,wait=s.waiting||0,pct=Math.min(100,Math.round(wait/Math.max(1,stationHandling(s))*100));return '<div class="manageCard"><h4>🚉 '+s.name+' <span style="color:#75d8ff">Lv.'+level+'</span></h4><div class="meta">駅勢圏 '+m.population.toLocaleString()+'人｜予想 '+m.users.toLocaleString()+'人/日｜平均待ち '+(s.avgWait||0).toFixed(1)+'時間</div><div class="manageStats"><div><small>待ち客</small><b class="'+((s.avgWait||0)>2?'passengerBad':(s.avgWait||0)>1?'passengerWarn':'passengerGood')+'">'+wait.toLocaleString()+'人</b></div><div><small>累計乗車</small><b>'+s.pax.toLocaleString()+'人</b></div><div><small>売上</small><b>'+Math.round(s.sales/1e4).toLocaleString()+'万円</b></div><div><small>処理力</small><b>'+stationHandling(s).toLocaleString()+'/時</b></div></div><div class="capacityBar"><i style="width:'+pct+'%"></i></div><div class="manageActions"><button data-manageaction="renameStation" data-id="'+s.id+'">名称変更</button><button class="good" data-manageaction="upgradeStation" data-id="'+s.id+'" '+(level>=3?'disabled':'')+'>駅改良 '+(stationUpgradeCost(s)/1e8).toFixed(0)+'億</button></div></div>'}).join(''):'<div class="muted">駅がありません。</div>'}else{$('manageGrid').innerHTML=S.trains.length?S.trains.map(tr=>{let line=S.lines.find(l=>l.id===tr.lineId),pct=Math.min(100,Math.round((tr.pax||0)/Math.max(1,tr.cap)*100));return '<div class="manageCard"><h4>🚆 '+tr.name+' <span style="color:#75d8ff">'+(tr.cars||6)+'両</span></h4><div class="meta">'+(TRAIN_TYPES[tr.trainType]?.label||'通勤型')+'｜'+trainStatusText(tr)+'｜定員 '+tr.cap.toLocaleString()+'人｜乗車 '+(tr.pax||0).toLocaleString()+'人｜混雑 '+Math.round((tr.pax||0)/Math.max(1,tr.cap)*100)+'%'+(tr.rushOnly?'｜ラッシュ増発':'')+'</div><div class="capacityBar"><i style="width:'+pct+'%"></i></div><div class="manageActions"><select data-trainline="'+tr.id+'">'+S.lines.map(l=>'<option value="'+l.id+'" '+(l.id===tr.lineId?'selected':'')+'>'+l.name+'</option>').join('')+'</select><button class="good" data-manageaction="upgradeTrain" data-id="'+tr.id+'" '+((tr.cars||6)>=10?'disabled':'')+'>増結 2億</button><button class="danger" data-manageaction="retireTrain" data-id="'+tr.id+'">引退</button></div></div>'}).join(''):'<div class="muted">列車がありません。</div>'}}
