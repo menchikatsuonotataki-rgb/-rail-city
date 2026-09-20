@@ -920,6 +920,24 @@ body:has(#title:not([style*="display: none"])) #trackCommitFloat{display:none!im
   #game:not(.track-construction) .buildConfirmBar{display:none!important}
 }
 
+/* v43.3: portrait map framing */
+@media(max-width:640px) and (orientation:portrait){
+  .mapWrap{
+    background:#a9cce1!important;
+  }
+  canvas#world{
+    position:absolute!important;
+    left:50%!important;
+    top:50%!important;
+    width:100%!important;
+    height:auto!important;
+    max-width:none!important;
+    max-height:none!important;
+    transform:translate(-50%,-50%)!important;
+    touch-action:none
+  }
+}
+
 /* v43: partner railway and through service */
 .v43Overlay{position:fixed;inset:0;z-index:45;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(2,8,14,.76);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .v43Overlay.open{display:flex}.v43Panel{width:min(920px,100%);max-height:min(88dvh,820px);overflow:auto;border:1px solid #547995;border-radius:20px;background:linear-gradient(180deg,#10283c,#091927);box-shadow:0 26px 100px rgba(0,0,0,.56)}
