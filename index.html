@@ -979,7 +979,7 @@ body:has(#title:not([style*="display: none"])) #trackCommitFloat{display:none!im
       <div class="titleSubcopy">つくる。つながる。ひろがる。小さな駅から始めて、あなたの鉄道都市を育てよう。</div>
     </div>
     <div class="titleHomeCard">
-      <div class="miniLogo">RAIL CITY<span>RAILWAY CITY BUILDER</span><div class="titleVersionBadge">VERSION 43.5</div></div>
+      <div class="miniLogo">RAIL CITY<span>RAILWAY CITY BUILDER</span><div class="titleVersionBadge">VERSION 43.6</div></div>
       <div class="homeMessage"><b>鉄道で、街をつくる。</b><span>線路を敷き、駅を置き、列車を走らせる。街はあなたの鉄道に合わせて成長します。</span></div>
       <div class="titleMainActions">
         <button class="primary" id="continueGame">▶ つづきから</button>
@@ -1250,7 +1250,7 @@ for(const [k,src] of Object.entries(RAIL_ART_SRC)){
   im.onload=()=>{try{render()}catch(_){}};im.src=src;
 }
 function artReady(k){let im=RAIL_ART[k];return !!(im&&im.complete&&im.naturalWidth)}
-function drawArt(k,x,y,w,h,alpha=1){let im=RAIL_ART[k];if(!artReady(k))return false;ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(im,x,y,w,h);ctx.restore();return true}
+function drawArt(k,x,y,w,h,alpha=1){let im=RAIL_ART[k];if(!artReady(k))return false;ctx.save();try{ctx.globalAlpha=alpha;ctx.drawImage(im,x,y,w,h);return true}catch(e){return false}finally{ctx.restore()}}
 /* v38: production raster art — real image assets, SVG only as fallback */
 const PROD_ART={atlas:new Image(),guide:new Image(),atlasReady:false,guideReady:false};
 const PROD_ATLAS_META={
@@ -1270,9 +1270,13 @@ function drawProdSprite(name,x,y,w,h,alpha=1){
   if(!PROD_ART.atlasReady)return false;
   let m=PROD_ATLAS_META[name];if(!m)return false;
   let sx=PROD_ART.atlas.naturalWidth/1024,sy=PROD_ART.atlas.naturalHeight/768;
-  ctx.save();ctx.globalAlpha=alpha;
-  ctx.drawImage(PROD_ART.atlas,m.x*sx,m.y*sy,m.w*sx,m.h*sy,x,y,w,h);
-  ctx.restore();return true
+  ctx.save();
+  try{
+    ctx.globalAlpha=alpha;
+    ctx.drawImage(PROD_ART.atlas,m.x*sx,m.y*sy,m.w*sx,m.h*sy,x,y,w,h);
+    return true
+  }catch(e){return false}
+  finally{ctx.restore()}
 }
 async function loadProductionArt(){
   try{
@@ -1827,7 +1831,7 @@ function building(z){
   }else if(artReady(key)){
     const im=RAIL_ART[key];w=h*(im.naturalWidth/im.naturalHeight);
     ctx.fillStyle='rgba(5,17,25,.23)';ctx.beginPath();ctx.ellipse(p.x+5*sc,p.y+5*sc,w*.32,5.5*sc,0,Math.PI*2);ctx.fill();
-    ctx.globalAlpha=night?.93:1;ctx.drawImage(im,p.x-w/2+shift,p.y-h+9*sc,w,h);ctx.globalAlpha=1;drawn=true;
+    try{ctx.globalAlpha=night?.93:1;ctx.drawImage(im,p.x-w/2+shift,p.y-h+9*sc,w,h);drawn=true}catch(e){drawn=false}finally{ctx.globalAlpha=1}
   }
   if(drawn){
     if(lv>=2){ctx.fillStyle='rgba(69,88,98,.72)';ctx.fillRect(p.x-w*.10,p.y-h*.79,w*.20,3*sc)}
@@ -1857,11 +1861,20 @@ function building(z){
       right=[top[1],top[2],{x:p.x,y:p.y+d/2},{x:p.x+fw/2,y:p.y}];
   poly(left,pal[1],'rgba(24,42,52,.34)');poly(right,pal[2],'rgba(24,42,52,.34)');poly(top,pal[0],'rgba(24,42,52,.34)');drawCrane(z);
 }
+function drawFallbackBuilding(z){
+  const p=worldToScreen(z.x+.5,z.y+.5),sc=Math.max(.1,S.zoom),lv=Math.max(1,z.lv||1);
+  const fw=TW*(lv>=3?.58:.50)*sc,d=TH*(lv>=3?.60:.52)*sc,fh=(13+lv*14)*sc,topY=p.y-fh;
+  const pal=z.type==='res'?['#f4efe7','#bca68f','#8d7966']:z.type==='com'?['#f4d58c','#b58a4c','#7e5d35']:['#a9d4ec','#668faa','#42677f'];
+  const top=[{x:p.x,y:topY-d/2},{x:p.x+fw/2,y:topY},{x:p.x,y:topY+d/2},{x:p.x-fw/2,y:topY}],
+        left=[top[3],top[2],{x:p.x,y:p.y+d/2},{x:p.x-fw/2,y:p.y}],
+        right=[top[1],top[2],{x:p.x,y:p.y+d/2},{x:p.x+fw/2,y:p.y}];
+  poly(left,pal[1],'rgba(24,42,52,.34)');poly(right,pal[2],'rgba(24,42,52,.34)');poly(top,pal[0],'rgba(24,42,52,.34)')
+}
 function tree(z){
   let p=worldToScreen(z.x+.5,z.y+.5),sc=S.zoom,key=season()==='spring'?'sakura':'tree';
   if(artReady(key)){
     let h=(28+rand(z.x,z.y,44)*9)*sc,im=RAIL_ART[key],w=h*(im.naturalWidth/im.naturalHeight);
-    ctx.drawImage(im,p.x-w/2,p.y-h+5*sc,w,h);return
+    try{ctx.drawImage(im,p.x-w/2,p.y-h+5*sc,w,h);return}catch(e){/* Safari SVG fallback below */}
   }
   ctx.save();ctx.fillStyle='#604936';ctx.fillRect(p.x-1.1*sc,p.y-7*sc,2.2*sc,9*sc);
   ctx.fillStyle=season()==='spring'?'#eaa4be':'#55985b';ctx.beginPath();ctx.arc(p.x,p.y-13*sc,7*sc,0,Math.PI*2);ctx.fill();ctx.restore()
@@ -2118,9 +2131,19 @@ function draw(){
   ctx.fillStyle=sky;ctx.fillRect(0,0,c.width,c.height);drawHorizonDepth();
   for(let s=0;s<GW+GH-1;s++)for(let y=0;y<GH;y++){
     let x=s-y;if(x<0||x>=GW)continue;let z=lot(x,y);
-    if(z.water){diamond(x,y,part==='夜'||part==='深夜'?'#214b69':'#4d99b9');continue}
-    if(z.road){drawRoadTile(z);continue}
-    drawGroundTile(z);if(z.type==='park'||z.type==='empty'){if(rand(x,y,4)<.62)tree(z);if(z.type==='park')drawParkDetails(z)}else building(z)
+    try{
+      if(z.water){diamond(x,y,part==='夜'||part==='深夜'?'#214b69':'#4d99b9');continue}
+      if(z.road){drawRoadTile(z);continue}
+      drawGroundTile(z);
+      if(z.type==='park'||z.type==='empty'){
+        if(rand(x,y,4)<.62){try{tree(z)}catch(e){}}
+        if(z.type==='park'){try{drawParkDetails(z)}catch(e){}}
+      }else{
+        try{building(z)}catch(e){drawFallbackBuilding(z)}
+      }
+    }catch(e){
+      try{diamond(x,y,z.road?'#60686c':'#71895e')}catch(_){}
+    }
   }
   drawWaterShimmer();for(const s of S.stations)drawStationDistrictBackdrop(s);drawRoadTraffic();drawRoadFurniture();for(const s of S.stations)drawStationPlaza(s);
   if(S.mode==='analysis')drawAnalysisOverlay();
@@ -2374,7 +2397,7 @@ const v43BaseDraw=draw;
 draw=function(){v43BaseDraw();v43DrawPartnerExtensions()};
 const v43BaseRender=render;
 render=function(){v43EnsureState();v43BaseRender();v43DecorateLines();v43RefreshButton();v43RenderPanel()};
-document.title='RAIL CITY v43.5 — 2.5D City Alpha';
+document.title='RAIL CITY v43.6 — 2.5D City Alpha';
 v43EnsureState();v43RefreshButton();
 
 })();
