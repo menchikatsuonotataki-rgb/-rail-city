@@ -920,20 +920,18 @@ body:has(#title:not([style*="display: none"])) #trackCommitFloat{display:none!im
   #game:not(.track-construction) .buildConfirmBar{display:none!important}
 }
 
-/* v43.3: portrait map framing */
+/* v43.5: portrait map framing */
 @media(max-width:640px) and (orientation:portrait){
-  .mapWrap{
-    background:#a9cce1!important;
-  }
+  .mapWrap{background:#a9cce1!important}
   canvas#world{
     position:absolute!important;
     left:50%!important;
-    top:50%!important;
+    top:max(92px,calc(env(safe-area-inset-top) + 82px))!important;
     width:100%!important;
     height:auto!important;
     max-width:none!important;
     max-height:none!important;
-    transform:translate(-50%,-50%)!important;
+    transform:translateX(-50%)!important;
     touch-action:none
   }
 }
@@ -1286,7 +1284,7 @@ loadProductionArt();
 $('title').style.backgroundImage=`url("${ASSETS.hero}")`;$('visualImage').src=ASSETS.board;
 const SAVE='railcity_2_5d_v8',GW=22,GH=18,TW=48,TH=26,OX=540,OY=76,stationNames=['桜ヶ丘','中央公園','みなと','青葉台','川辺','新都心','緑ヶ丘','港南','山手','湖畔','朝日町','未来台'];
 const S={cash:18e9,revenue:0,totalPax:0,day:1,hour:7,speed:1,mode:'inspect',trackShape:'curve',buildStructure:'ground',buildDouble:false,stationCandidate:null,routeDraft:[],routeTrackId:null,routeColor:'#38b9ff',routeService:'local',activeLineId:null,timetableCandidate:null,analysisLayer:'population',dailyRailRevenue:0,lastDayRevenue:0,lastDayCost:0,lastDayProfit:0,financeHistory:[],completedMissions:[],claimedMissions:[],manageTab:'stations',passengerStats:{completed:0,transfers:0,leftBehind:0,totalWait:0,waitSamples:0,crowdingSum:0,crowdingSamples:0},satisfaction:100,cityRank:'E',rankRewarded:[],redevelopmentCount:0,tutorialActive:false,tutorialStep:0,tutorialDone:false,draft:[],tracks:[],stations:[],lines:[],trains:[],lots:[],nextTrack:1,nextStation:1,nextLine:1,nextTrain:1,selectedTrack:null,followTrainId:null,zoom:1,panX:0,panY:0,lastPop:0,news:'最初の線路を計画してください。'};
-let last=performance.now(),simAcc=0,autoAcc=0,visualClock=0;
+let last=performance.now(),simAcc=0,autoAcc=0,visualClock=0,cameraUserAdjusted=false;
 function rand(x,y,s){let n=(x*73856093)^(y*19349663)^(s*83492791);return((n>>>0)%1000)/1000}
 function iso(x,y){return{x:OX+(x-y)*TW*.5,y:OY+(x+y)*TH*.5}}
 function invIso(sx,sy){let x0=(sx-OX),y0=(sy-OY),a=x0/(TW*.5),b=y0/(TH*.5);return{x:(a+b)/2,y:(b-a)/2}}
@@ -1343,7 +1341,7 @@ function fitInitialMapView(silent=false){
     canvas.style.setProperty('max-width','none','important');
     canvas.style.setProperty('max-height','none','important');
     canvas.style.setProperty('transform','translate(-50%,-50%)','important');
-    const fit=.88;
+    const fit=.90;
     S.zoom=fit;
     S.panX=(canvas.width/2-cx)*fit;
     S.panY=(canvas.height/2-cy)*fit;
@@ -1362,7 +1360,7 @@ function fitInitialMapView(silent=false){
   S.panY=(canvas.height/2-cy)*fit;
   if(!silent)notify('都市全体が見える位置に戻しました。')
 }
-function start(fresh){if(fresh){Object.assign(S,{cash:18e9,revenue:0,totalPax:0,day:1,hour:7,speed:1,mode:'inspect',trackShape:'curve',buildStructure:'ground',buildDouble:false,stationCandidate:null,routeDraft:[],routeTrackId:null,routeColor:'#38b9ff',routeService:'local',activeLineId:null,timetableCandidate:null,analysisLayer:'population',dailyRailRevenue:0,lastDayRevenue:0,lastDayCost:0,lastDayProfit:0,financeHistory:[],completedMissions:[],claimedMissions:[],manageTab:'stations',passengerStats:{completed:0,transfers:0,leftBehind:0,totalWait:0,waitSamples:0,crowdingSum:0,crowdingSamples:0},satisfaction:100,cityRank:'E',rankRewarded:[],redevelopmentCount:0,tutorialActive:false,tutorialStep:0,tutorialDone:false,draft:[],tracks:[],stations:[],lines:[],trains:[],lots:[],nextTrack:1,nextStation:1,nextLine:1,nextTrain:1,selectedTrack:null,followTrainId:null,zoom:1,panX:0,panY:0,lastPop:0,news:'最初の線路を計画してください。'});initLots();recalcAccess();S.lastPop=totals().p;save()}else if(!load()){initLots();recalcAccess();S.lastPop=totals().p} $('title').style.display='none';$('game').style.display='block';setMode('inspect');requestAnimationFrame(()=>requestAnimationFrame(()=>{fitInitialMapView(true);render()}));if(fresh)setTimeout(()=>startTutorial(),120)}
+function start(fresh){if(fresh){Object.assign(S,{cash:18e9,revenue:0,totalPax:0,day:1,hour:7,speed:1,mode:'inspect',trackShape:'curve',buildStructure:'ground',buildDouble:false,stationCandidate:null,routeDraft:[],routeTrackId:null,routeColor:'#38b9ff',routeService:'local',activeLineId:null,timetableCandidate:null,analysisLayer:'population',dailyRailRevenue:0,lastDayRevenue:0,lastDayCost:0,lastDayProfit:0,financeHistory:[],completedMissions:[],claimedMissions:[],manageTab:'stations',passengerStats:{completed:0,transfers:0,leftBehind:0,totalWait:0,waitSamples:0,crowdingSum:0,crowdingSamples:0},satisfaction:100,cityRank:'E',rankRewarded:[],redevelopmentCount:0,tutorialActive:false,tutorialStep:0,tutorialDone:false,draft:[],tracks:[],stations:[],lines:[],trains:[],lots:[],nextTrack:1,nextStation:1,nextLine:1,nextTrain:1,selectedTrack:null,followTrainId:null,zoom:1,panX:0,panY:0,lastPop:0,news:'最初の線路を計画してください。'});initLots();recalcAccess();S.lastPop=totals().p;save()}else if(!load()){initLots();recalcAccess();S.lastPop=totals().p} cameraUserAdjusted=false;$('title').style.display='none';$('game').style.display='block';setMode('inspect');requestAnimationFrame(()=>requestAnimationFrame(()=>{fitInitialMapView(true);render()}));if(fresh)setTimeout(()=>startTutorial(),120)}
 $('newGame').onclick=()=>start(true);$('continueGame').onclick=()=>start(false);$('continueGame').disabled=!localStorage.getItem(SAVE);
 /* v32 title information panels */
 function showTitleMini(title,text){$('titleMiniTitle').textContent=title;$('titleMiniText').textContent=text;$('titleMiniPanel').classList.add('open')}
@@ -1582,7 +1580,7 @@ function followableTrains(){let running=S.trains.filter(t=>trainIsRunning(t));re
 function nearestTrain(p,threshold=1.05){let best=null,bd=Infinity;for(const tr of S.trains){let line=S.lines.find(l=>l.id===tr.lineId),q=line&&routePointAt(line,tr.t);if(!q)continue;let d=Math.hypot(q.x-p.x,q.y-p.y);if(d<bd){bd=d;best=tr}}return bd<=threshold?best:null}
 function startTrainFollow(id){
   let list=followableTrains();if(!list.length){notify('追跡できる列車がありません。先に列車を運行してください。');return}
-  let tr=S.trains.find(t=>t.id===id)||list[0];setMode('inspect');S.followTrainId=tr.id;
+  let tr=S.trains.find(t=>t.id===id)||list[0];cameraUserAdjusted=true;setMode('inspect');S.followTrainId=tr.id;
   if(S.zoom<1.08)S.zoom=1.08;
   let line=S.lines.find(l=>l.id===tr.lineId);
   notify((line?line.name+' ':'')+tr.name+' を追跡します。');
@@ -1731,8 +1729,8 @@ $('firstHour').onchange=()=>{if(S.timetableCandidate){S.timetableCandidate.first
 $('lastHour').onchange=()=>{if(S.timetableCandidate){S.timetableCandidate.lastHour=+$('lastHour').value;render()}};
 $('ttLineSelect').onchange=()=>openTimetableEditor(+$('ttLineSelect').value);$('ttStart').onclick=confirmTimetable;$('ttCancel').onclick=()=>setMode('inspect');document.querySelectorAll('[data-analysis]').forEach(b=>b.onclick=()=>{S.analysisLayer=b.dataset.analysis;render()});$('analysisClose').onclick=()=>setMode('inspect');$('companyClose').onclick=()=>setMode('inspect');$('missionsClose').onclick=()=>setMode('inspect');$('railOpsClose').onclick=()=>setMode('inspect');$('manageClose').onclick=()=>setMode('inspect');document.querySelectorAll('[data-managetab]').forEach(b=>b.onclick=()=>{S.manageTab=b.dataset.managetab;render()});$('manageGrid').onclick=e=>{let b=e.target.closest('[data-manageaction]');if(!b)return;let id=+b.dataset.id,a=b.dataset.manageaction;if(a==='upgradeStation')upgradeStation(id);else if(a==='renameStation')renameStation(id);else if(a==='upgradeTrain')upgradeTrain(id);else if(a==='retireTrain')retireTrain(id)};$('manageGrid').onchange=e=>{let x=e.target.closest('[data-trainline]');if(x)assignTrain(+x.dataset.trainline,+x.value)};$('upgradeDouble').onclick=upgradeDouble;$('upgradeSignal').onclick=upgradeSignal;$('upgradeJunction').onclick=upgradeJunction;$('infraTrackSelect').onchange=()=>{S.selectedTrack=+$('infraTrackSelect').value;render()};$('missionGrid').onclick=e=>{let b=e.target.closest('[data-claim]');if(b)claimMission(b.dataset.claim)};
 document.querySelectorAll('[data-trackshape]').forEach(b=>b.onclick=()=>{S.trackShape=b.dataset.trackshape;S.draft=[];document.querySelectorAll('[data-trackshape]').forEach(x=>x.classList.toggle('active',x.dataset.trackshape===S.trackShape));notify(S.trackShape==='straight'?'直線モード：始点から終点までドラッグしてください。':S.trackShape==='branch'?'分岐モード：既存線路から外へドラッグしてください。':'カーブモード：指でなぞった形に線路を計画します。');render()});
-$('toolsToggle').onclick=()=>{$('game').classList.toggle('tools-collapsed');$('toolsToggle').textContent=$('game').classList.contains('tools-collapsed')?'☰ ツール':'✕ 閉じる'};$('mapBackBtn').onclick=()=>setMode('inspect');if(window.innerWidth<=920){$('game').classList.add('tools-collapsed');$('toolsToggle').textContent='☰ ツール'}document.querySelectorAll('[data-structure],[data-buildmode],[data-stationmode],[data-analysis],[data-routecolor]').forEach(b=>b.addEventListener('click',()=>{if(window.innerWidth<=920){$('game').classList.add('tools-collapsed');$('toolsToggle').textContent='☰ ツール'}}));$('buildNow').onclick=confirmTrack;if($('trackCommitBtn'))$('trackCommitBtn').onclick=confirmTrack;document.querySelector('[data-action="line"]').onclick=()=>{openRouteEditor();refreshTutorialFocus()};document.querySelector('[data-action="train"]').onclick=()=>{openTimetableEditor();refreshTutorialFocus()};document.querySelector('[data-action="analysis"]').onclick=openAnalysis;document.querySelector('[data-action="company"]').onclick=openCompany;document.querySelector('[data-action="missions"]').onclick=()=>{openMissions();refreshTutorialFocus()};document.querySelector('[data-action="railops"]').onclick=openRailOps;document.querySelector('[data-action="manage"]').onclick=()=>openManage();document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{S.speed=+b.dataset.speed;render()});$('fullscreenBtn').onclick=async()=>{try{let target=$('game');if(target.requestFullscreen){await target.requestFullscreen();}else if(target.webkitRequestFullscreen){target.webkitRequestFullscreen();}notify('全画面表示にしました。');}catch(e){notify('Safariではこのまま画面いっぱいで表示します。さらに広くする場合は「共有」→「ホーム画面に追加」を使えます。');}};$('confirmTrack').onclick=confirmTrack;$('undoPoint').onclick=()=>{S.draft.pop();render()};$('cancelDraft').onclick=()=>{S.draft=[];render()};function changeMapZoom(delta){S.followTrainId=null;let minZoom=(window.innerWidth<=640&&window.innerHeight>window.innerWidth)?.58:(window.innerWidth<=920?.48:.68);S.zoom=Math.max(minZoom,Math.min(1.55,S.zoom+delta));render()}
-function centerMapView(){fitInitialMapView(false);render()}
+$('toolsToggle').onclick=()=>{$('game').classList.toggle('tools-collapsed');$('toolsToggle').textContent=$('game').classList.contains('tools-collapsed')?'☰ ツール':'✕ 閉じる'};$('mapBackBtn').onclick=()=>setMode('inspect');if(window.innerWidth<=920){$('game').classList.add('tools-collapsed');$('toolsToggle').textContent='☰ ツール'}document.querySelectorAll('[data-structure],[data-buildmode],[data-stationmode],[data-analysis],[data-routecolor]').forEach(b=>b.addEventListener('click',()=>{if(window.innerWidth<=920){$('game').classList.add('tools-collapsed');$('toolsToggle').textContent='☰ ツール'}}));$('buildNow').onclick=confirmTrack;if($('trackCommitBtn'))$('trackCommitBtn').onclick=confirmTrack;document.querySelector('[data-action="line"]').onclick=()=>{openRouteEditor();refreshTutorialFocus()};document.querySelector('[data-action="train"]').onclick=()=>{openTimetableEditor();refreshTutorialFocus()};document.querySelector('[data-action="analysis"]').onclick=openAnalysis;document.querySelector('[data-action="company"]').onclick=openCompany;document.querySelector('[data-action="missions"]').onclick=()=>{openMissions();refreshTutorialFocus()};document.querySelector('[data-action="railops"]').onclick=openRailOps;document.querySelector('[data-action="manage"]').onclick=()=>openManage();document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{S.speed=+b.dataset.speed;render()});$('fullscreenBtn').onclick=async()=>{try{let target=$('game');if(target.requestFullscreen){await target.requestFullscreen();}else if(target.webkitRequestFullscreen){target.webkitRequestFullscreen();}notify('全画面表示にしました。');}catch(e){notify('Safariではこのまま画面いっぱいで表示します。さらに広くする場合は「共有」→「ホーム画面に追加」を使えます。');}};$('confirmTrack').onclick=confirmTrack;$('undoPoint').onclick=()=>{S.draft.pop();render()};$('cancelDraft').onclick=()=>{S.draft=[];render()};function changeMapZoom(delta){cameraUserAdjusted=true;S.followTrainId=null;let minZoom=(window.innerWidth<=640&&window.innerHeight>window.innerWidth)?.58:(window.innerWidth<=920?.48:.68);S.zoom=Math.max(minZoom,Math.min(1.55,S.zoom+delta));render()}
+function centerMapView(){cameraUserAdjusted=false;fitInitialMapView(false);render()}
 $('zoomIn').onclick=()=>changeMapZoom(.1);$('zoomOut').onclick=()=>changeMapZoom(-.1);
 if($('mapZoomIn'))$('mapZoomIn').onclick=()=>changeMapZoom(.1);
 if($('mapZoomOut'))$('mapZoomOut').onclick=()=>changeMapZoom(-.1);
@@ -1752,7 +1750,7 @@ function beginTrackDraw(e){
 function moveTrackDraw(e){
   if(cameraDragging&&S.mode==='inspect'&&e.pointerId===cameraPointer){
     e.preventDefault();let r=c.getBoundingClientRect(),dx=e.clientX-cameraLast.x,dy=e.clientY-cameraLast.y;
-    if(Math.abs(dx)+Math.abs(dy)>1.5){cameraMoved=true;S.followTrainId=null}
+    if(Math.abs(dx)+Math.abs(dy)>1.5){cameraMoved=true;cameraUserAdjusted=true;S.followTrainId=null}
     S.panX+=dx*c.width/r.width;S.panY+=dy*c.height/r.height;cameraLast={x:e.clientX,y:e.clientY};render();return
   }
   if(!trackDrawing||S.mode!=='track'||e.pointerId!==trackPointer)return;e.preventDefault();let raw=snapTrackPoint(screenToWorld(e)),snap=snapToExisting(raw,.72,null),p=snap.point;draftEndConnection=snap.connection;if(S.trackShape==='straight'&&!draftEndConnection)p=snapStraightEnd(S.draft[0],p);let a=S.draft[0];if(S.trackShape==='straight')S.draft=[a,p];else{let last=S.draft[S.draft.length-1];if(!last||dist(last,p)>.18)S.draft.push(p);else S.draft[S.draft.length-1]=p}render()}
@@ -2094,7 +2092,20 @@ function drawHorizonDepth(){
   const base=105+S.panY*.05;for(let i=0;i<28;i++){const x=i*(c.width/27),hh=(18+((i*37)%66))*Math.max(.65,S.zoom*.7);ctx.fillStyle=night?'rgba(11,29,49,.34)':'rgba(70,111,132,.14)';ctx.fillRect(x,base-hh,20+(i%5)*6,hh);if(night&&i%3===0){ctx.fillStyle='rgba(255,218,137,.25)';ctx.fillRect(x+5,base-hh+12,2,2)}}
   ctx.restore()
 }
+function enforceInitialCamera(){
+  const gameEl=$('game');
+  if(cameraUserAdjusted||S.mode!=='inspect'||!gameEl||getComputedStyle(gameEl).display==='none')return;
+  const fit=(window.innerWidth<=640&&window.innerHeight>window.innerWidth)?.90:(window.innerWidth<=920?.82:1);
+  const corners=[iso(.2,.2),iso(GW-.2,.2),iso(.2,GH-.2),iso(GW-.2,GH-.2)];
+  const minX=Math.min(...corners.map(p=>p.x)),maxX=Math.max(...corners.map(p=>p.x));
+  const minY=Math.min(...corners.map(p=>p.y)),maxY=Math.max(...corners.map(p=>p.y));
+  const cx=(minX+maxX)/2,cy=(minY+maxY)/2;
+  S.zoom=fit;
+  S.panX=(c.width/2-cx)*fit;
+  S.panY=(c.height/2-cy)*fit;
+}
 function draw(){
+  enforceInitialCamera();
   ctx.clearRect(0,0,c.width,c.height);let part=daypart(),sky=part==='夜'||part==='深夜'?'#10233d':part==='夕方'?'#c98f78':part==='朝'?'#a9cce1':'#9fd0ee';
   ctx.fillStyle=sky;ctx.fillRect(0,0,c.width,c.height);drawHorizonDepth();
   for(let s=0;s<GW+GH-1;s++)for(let y=0;y<GH;y++){
@@ -2355,7 +2366,7 @@ const v43BaseDraw=draw;
 draw=function(){v43BaseDraw();v43DrawPartnerExtensions()};
 const v43BaseRender=render;
 render=function(){v43EnsureState();v43BaseRender();v43DecorateLines();v43RefreshButton();v43RenderPanel()};
-document.title='RAIL CITY v43 — 2.5D City Alpha';
+document.title='RAIL CITY v43.5 — 2.5D City Alpha';
 v43EnsureState();v43RefreshButton();
 
 })();
