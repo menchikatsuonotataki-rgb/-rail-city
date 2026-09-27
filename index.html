@@ -1074,6 +1074,13 @@ body:has(#title:not([style*="display: none"])) #trackCommitFloat{display:none!im
 #v45RouteHint{position:absolute;z-index:4;top:clamp(142px,19%,235px);right:9px;max-width:min(250px,59%);padding:9px 11px;border:1px solid rgba(119,221,255,.73);border-radius:12px;background:linear-gradient(125deg,rgba(8,44,69,.94),rgba(5,27,47,.93));box-shadow:0 5px 20px rgba(0,22,40,.2);font-size:11px;font-weight:850;line-height:1.5;color:#e8faff;pointer-events:none}
 #v45RouteHint[hidden]{display:none!important}
 @media(max-width:640px){#v45RouteHint{top:clamp(137px,17%,205px);right:7px;max-width:min(207px,56%);font-size:10px;padding:7px 8px}#game .shapeRail .v45EditBtn{min-height:36px;padding:5px 8px;font-size:10px}}
+
+/* v45.1: editable routes remain accessible with mobile tools collapsed */
+#v45RouteActions{position:absolute;z-index:5;top:clamp(203px,28%,305px);right:9px;display:flex;gap:6px;pointer-events:auto}
+#game:not(.track-construction) #v45RouteActions{display:none!important}
+#v45RouteActions button{min-height:35px;padding:7px 11px;color:#f3fbff;border:1px solid #75afcf;border-radius:10px;font-size:11px;font-weight:950;background:linear-gradient(160deg,#174b6a,#092a45);box-shadow:0 5px 14px rgba(3,23,40,.23);touch-action:manipulation}
+#v45RouteActions #v45ClearFloat{border-color:#bb7889;background:linear-gradient(160deg,#5b3445,#322231)}
+@media(max-width:640px){#v45RouteActions{top:clamp(188px,24%,270px);right:7px}#v45RouteActions button{min-height:34px;padding:6px 9px;font-size:10px}}
 </style>
 </head>
 <body>
@@ -1086,7 +1093,7 @@ body:has(#title:not([style*="display: none"])) #trackCommitFloat{display:none!im
       <div class="titleSubcopy">つくる。つながる。ひろがる。小さな駅から始めて、あなたの鉄道都市を育てよう。</div>
     </div>
     <div class="titleHomeCard">
-      <div class="miniLogo">RAIL CITY<span>RAILWAY CITY BUILDER</span><div class="titleVersionBadge">VERSION 45.0</div></div>
+      <div class="miniLogo">RAIL CITY<span>RAILWAY CITY BUILDER</span><div class="titleVersionBadge">VERSION 45.1</div></div>
       <div class="homeMessage"><b>鉄道で、街をつくる。</b><span>線路を敷き、駅を置き、列車を走らせる。街はあなたの鉄道に合わせて成長します。</span></div>
       <div class="titleMainActions">
         <button class="primary" id="continueGame">▶ つづきから</button>
@@ -1105,7 +1112,7 @@ body:has(#title:not([style*="display: none"])) #trackCommitFloat{display:none!im
 <main id="game">
 <div class="top"><div class="stat"><small>会社資金</small><b id="cash">180.0億円</b><span class="delta">建設と経営</span></div><div class="stat"><small>都市人口</small><b id="pop">0人</b><span class="delta" id="growth">+0 / 日</span></div><div class="stat"><small>鉄道収入</small><b id="rev">0万円</b><span class="delta" id="pax">0人 輸送</span></div><div class="stat"><small>日時</small><b id="time">Day 1 07:00</b><span class="delta" id="daypart">朝</span></div><div class="stat"><small>速度</small><b id="speed">×1</b><span class="delta">2.5D都市</span></div></div>
 <div class="layout"><section class="main"><div class="mapWrap"><canvas id="world" width="1080" height="720"></canvas><div class="mapTitle"><b id="modeTitle">RAIL CITY</b><span id="modeHelp">街をドラッグして見渡し、ツールから建設を始めます。</span></div><div class="legend">道路・建物・公園・線路・駅・列車はすべて別オブジェクト</div><div id="seasonBadge" style="position:absolute;right:10px;top:10px;z-index:7;padding:6px 9px;border-radius:9px;background:rgba(5,17,28,.78);border:1px solid rgba(255,255,255,.16);font-size:10px;pointer-events:none">🌸 春</div><div id="connectionHint" class="connectionHint">既存線に接続</div><button id="toolsToggle" class="mapUtilityBtn">☰ ツール</button><button id="mapBackBtn" class="mapUtilityBtn">← 街へ戻る</button>
-<div id="v45RouteHint" role="status" aria-live="polite" hidden></div><div id="quickBuildNav" class="quickBuildNav" hidden aria-label="建設ショートカット"><button id="quickTrackBtn" type="button"><span>🛤️</span>線路建設</button><button id="quickStationBtn" type="button"><span>🚉</span>駅建設</button><button id="v44RouteBtn" type="button" hidden><span>🗺️</span>路線開業</button><button id="v44TrainBtn" type="button" hidden><span>🚆</span>列車購入</button></div>
+<div id="v45RouteHint" role="status" aria-live="polite" hidden></div><div id="v45RouteActions" aria-label="線路ルートの修正"><button type="button" id="v45UndoFloat">↶ 戻す</button><button type="button" id="v45ClearFloat">✕ 消去</button></div><div id="quickBuildNav" class="quickBuildNav" hidden aria-label="建設ショートカット"><button id="quickTrackBtn" type="button"><span>🛤️</span>線路建設</button><button id="quickStationBtn" type="button"><span>🚉</span>駅建設</button><button id="v44RouteBtn" type="button" hidden><span>🗺️</span>路線開業</button><button id="v44TrainBtn" type="button" hidden><span>🚆</span>列車購入</button></div>
 <div id="cameraDock" class="cameraDock" aria-label="カメラ操作">
   <button id="mapZoomIn" aria-label="拡大">＋</button>
   <button id="mapZoomOut" aria-label="縮小">－</button>
@@ -1561,6 +1568,7 @@ function tutorialGuideState(){
       if($('game').classList.contains('tools-collapsed'))return{sel:'#toolsToggle',text:'「ツール」を開いて、地上線を選べるようにしましょう。'};
       return{sel:'[data-structure="ground"]',text:'上の「地上線」ボタンをタップしましょう！'};
     }
+    if(S.draft.length===1)return{sel:'#world',map:true,text:'始点を置けました！ 次は離れた場所を終点としてタップするか、指で線路を伸ばしましょう。'};
     if(S.draft.length<2)return{sel:'#world',map:true,text:'始点→終点を2回タップ、または指でなぞって線路を描きましょう。戻す・消去も使えます。'};
     let a=buildAssessment();
     if(a.needsBridge)return{sel:'#world',map:true,text:'水上区間を検出しました。橋梁と高架を選ぶ画面から構造を決めましょう。ルートは消えません。'};
@@ -2077,6 +2085,7 @@ function v45Cancel(e){
 c.addEventListener('pointerdown',beginTrackDraw);c.addEventListener('pointermove',moveTrackDraw);
 c.addEventListener('pointerup',endTrackDraw);c.addEventListener('pointercancel',v45Cancel);
 $('v45UndoRoute').onclick=v45UndoDraft;$('v45ClearRoute').onclick=v45ClearDraft;
+$('v45UndoFloat').onclick=v45UndoDraft;$('v45ClearFloat').onclick=v45ClearDraft;
 function poly(points,fill,stroke){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}}
 function diamond(x,y,fill){let p=worldToScreen(x+.5,y+.5),w=TW*.5*S.zoom,h=TH*.5*S.zoom;poly([{x:p.x,y:p.y-h},{x:p.x+w,y:p.y},{x:p.x,y:p.y+h},{x:p.x-w,y:p.y}],fill,null)}
 function season(){let d=((S.day-1)%48+48)%48;return d<12?'spring':d<24?'summer':d<36?'autumn':'winter'}
@@ -2708,7 +2717,7 @@ const v43BaseDraw=draw;
 draw=function(){v43BaseDraw();v43DrawPartnerExtensions()};
 const v43BaseRender=render;
 render=function(){v43EnsureState();v43BaseRender();v43DecorateLines();v43RefreshButton();v43RenderPanel()};
-document.title='RAIL CITY v45.0 — 2.5D City Alpha';
+document.title='RAIL CITY v45.1 — 2.5D City Alpha';
 v43EnsureState();v43RefreshButton();
 
 })();
